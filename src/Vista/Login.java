@@ -1,14 +1,29 @@
-package modelo;
+package Vista;
 
+//imports de la conexion a base de datos 
+// import java.sql.Connection;
+// import java.sql.PreparedStatement;
+// import java.sql.ResultSet;
+
+//imports de la interfaz grafica
 import javax.swing.*;
+
+import Modelo.Conexion;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class Login extends JFrame {
 
     private boolean mostrar = false;
-    private JPasswordField txtPass;   // 👈 ahora global
+    private JPasswordField txtPass;
+    private JTextField txtId;
+    private JComboBox<String> cbTipo;
+    private JComboBox<String> cbRol;   // 👈 ahora global
 
     public Login() {
 
@@ -35,7 +50,7 @@ public class Login extends JFrame {
         lblId.setBounds(40, 70, 180, 25);
         panel.add(lblId);
 
-        JTextField txtId = new JTextField();
+        txtId = new JTextField();
         txtId.setBounds(220, 70, 180, 25);
         panel.add(txtId);
 
@@ -47,7 +62,7 @@ public class Login extends JFrame {
         panel.add(lblTipo);
 
         String[] tipos = {"CC", "CE", "TI", "PPT"};
-        JComboBox<String> cbTipo = new JComboBox<>(tipos);
+        cbTipo = new JComboBox<>(tipos);
         cbTipo.setBounds(130, 110, 100, 25);
         panel.add(cbTipo);
 
@@ -59,7 +74,7 @@ public class Login extends JFrame {
         panel.add(lblRol);
 
         String[] roles = {"Coordinador", "Instructor", "Aprendiz"};
-        JComboBox<String> cbRol = new JComboBox<>(roles);
+        cbRol = new JComboBox<>(roles);
         cbRol.setBounds(320, 110, 100, 25);
         panel.add(cbRol);
 
@@ -77,10 +92,10 @@ public class Login extends JFrame {
         // 👁 ICONO
         JLabel eye = new JLabel("👁");
         eye.setBounds(380, 150, 30, 25);
-        eye.setCursor(new Cursor(Cursor.HAND_CURSOR)); // cursor mano
+        eye.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
         panel.add(eye);
 
-        // ================= FUNCIÓN MOSTRAR / OCULTAR =================
+        
         eye.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -105,7 +120,64 @@ public class Login extends JFrame {
         panel.add(btn);
 
         btn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Ingresando...");
+
+            String identificacion = txtId.getText();
+            String tipo = cbTipo.getSelectedItem().toString();
+            String rol = cbRol.getSelectedItem().toString();
+            String pass = String.valueOf(txtPass.getPassword());
+
+            try {
+
+                Connection con = Conexion.conectar();
+
+                String sql =
+                        "SELECT * FROM usuarios " +
+                        "WHERE identificacion=? " +
+                        "AND tipo_documento=? " +
+                        "AND rol=? " +
+                        "AND password=?";
+
+                PreparedStatement ps = con.prepareStatement(sql);
+
+                ps.setString(1, identificacion);
+                ps.setString(2, tipo);
+                ps.setString(3, rol);
+                ps.setString(4, pass);
+
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
+
+                    JOptionPane.showMessageDialog(this,
+                            "Bienvenido " + rs.getString("nombre"));
+
+                    // abrimos los paneles segun el rol
+
+                    if (rol.equals("Aprendiz")) {
+
+                        new PanelAprendiz().setVisible(true);
+
+                    } else if (rol.equals("Instructor")) {
+
+                        new panelInstructor().setVisible(true);
+
+                    } else if (rol.equals("Coordinador")) {
+
+                        new PanelCoordinador().setVisible(true);
+                    }
+
+                    dispose();
+
+                } else {
+
+                    JOptionPane.showMessageDialog(this,
+                            "Credenciales incorrectas");
+                }
+
+            } catch (Exception ex) {
+
+                ex.printStackTrace();
+            }
         });
     }
 
