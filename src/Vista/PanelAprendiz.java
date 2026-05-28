@@ -6,6 +6,8 @@ public class PanelAprendiz extends JFrame {
 
     public PanelAprendiz() {
 
+        
+
         setTitle("Panel Aprendiz");
         setSize(800, 600);
         setLocationRelativeTo(null);

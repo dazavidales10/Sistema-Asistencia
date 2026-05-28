@@ -1,13 +1,7 @@
 package Vista;
 
-//imports de la conexion a base de datos 
-// import java.sql.Connection;
-// import java.sql.PreparedStatement;
-// import java.sql.ResultSet;
-
 //imports de la interfaz grafica
 import javax.swing.*;
-
 import Modelo.Conexion;
 
 import java.awt.*;
@@ -23,7 +17,7 @@ public class Login extends JFrame {
     private JPasswordField txtPass;
     private JTextField txtId;
     private JComboBox<String> cbTipo;
-    private JComboBox<String> cbRol;   // 👈 ahora global
+    private JComboBox<String> cbRol;   
 
     public Login() {
 

@@ -10,6 +10,7 @@ public class Conexion {
 
     private static final String USER = "root";
     private static final String PASSWORD = "";
+    public Connection con;
 
     public static Connection conectar() {
 
