@@ -1,11 +1,13 @@
+// =======================
+// Login.java
+// =======================
+
 package Vista;
 
-//imports de la conexion a base de datos 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-//imports de la interfaz grafica
 import javax.swing.*;
 import Modelo.Conexion;
 
@@ -19,7 +21,7 @@ public class Login extends JFrame {
     private JPasswordField txtPass;
     private JTextField txtId;
     private JComboBox<String> cbTipo;
-    private JComboBox<String> cbRol;   
+    private JComboBox<String> cbRol;
 
     public Login() {
 
@@ -85,23 +87,21 @@ public class Login extends JFrame {
         txtPass.setBounds(170, 150, 200, 25);
         panel.add(txtPass);
 
-        // 👁 ICONO
         JLabel eye = new JLabel("👁");
         eye.setBounds(380, 150, 30, 25);
-        eye.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
+        eye.setCursor(new Cursor(Cursor.HAND_CURSOR));
         panel.add(eye);
 
-        
         eye.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
 
                 if (mostrar) {
-                    txtPass.setEchoChar('•'); // ocultar
+                    txtPass.setEchoChar('•');
                     eye.setText("👁");
                     mostrar = false;
                 } else {
-                    txtPass.setEchoChar((char) 0); // mostrar texto
+                    txtPass.setEchoChar((char) 0);
                     eye.setText("/");
                     mostrar = true;
                 }
@@ -126,21 +126,27 @@ public class Login extends JFrame {
 
                 Connection con = Conexion.conectar();
 
+                // =======================
+                // SQL UNIFICADO CORRECTO
+                // =======================
                 String sql =
-                        "SELECT * FROM usuarios " +
-                        "WHERE identificacion=? " +
-                        "AND tipoDocumento=? " +
-                        "AND rol=? " +
-                        "AND password=?";
-
+                        "SELECT u.*, " +
+                        "a.numeroFicha, a.programa, " +
+                        "c.area " +
+                        "FROM usuarios u " +
+                        "LEFT JOIN aprendiz a ON u.id = a.id " +
+                        "LEFT JOIN coordinador c ON u.id = c.id " +
+                        "WHERE u.identificacion = ? " +
+                        "AND u.tipoDocumento = ? " +
+                        "AND u.rol = ? " +
+                        "AND u.password = ?";
 
                 PreparedStatement ps = con.prepareStatement(sql);
 
-                ps.setString(1, identificacion);   // número de documento
-                ps.setString(2, tipo);             // CC, CE, TI, PPT
-                ps.setString(3, rol);              // Aprendiz, Instructor, Coordinador
-                ps.setString(4, pass);             // contraseña
-
+                ps.setString(1, identificacion);
+                ps.setString(2, tipo);
+                ps.setString(3, rol);
+                ps.setString(4, pass);
 
                 ResultSet rs = ps.executeQuery();
 
@@ -149,23 +155,30 @@ public class Login extends JFrame {
                     JOptionPane.showMessageDialog(this,
                             "Bienvenido " + rs.getString("nombre"));
 
-                    // abrimos los paneles segun el rol
+                    // =======================
+                    // ABRIR SEGUN ROL
+                    // =======================
 
                     if (rol.equals("Aprendiz")) {
-                    new PanelAprendiz(
-                        rs.getString("nombre"),     // nombre real del aprendiz
-                        rs.getString("ficha"),      // ficha registrada
-                        rs.getInt("asistencia"),    // porcentaje asistencia
-                        rs.getInt("faltas"),        // número de faltas
-                        rs.getInt("tardanzas")      // número de tardanzas
-                         ).setVisible(true);
-                }else if (rol.equals("Instructor")) {
+
+                        new PanelAprendiz(
+                                rs.getString("nombre"),
+                                rs.getString("numeroFicha"),
+                                95,
+                                2,
+                                1
+                        ).setVisible(true);
+
+                    } else if (rol.equals("Instructor")) {
 
                         new panelInstructor().setVisible(true);
 
                     } else if (rol.equals("Coordinador")) {
 
-                        new PanelCoordinador().setVisible(true);
+                        new PanelCoordinador(
+                                rs.getString("nombre"),
+                                rs.getString("area")
+                        ).setVisible(true);
                     }
 
                     dispose();
@@ -177,7 +190,6 @@ public class Login extends JFrame {
                 }
 
             } catch (Exception ex) {
-
                 ex.printStackTrace();
             }
         });
