@@ -1,9 +1,9 @@
 package Vista;
 
 //imports de la conexion a base de datos 
-// import java.sql.Connection;
-// import java.sql.PreparedStatement;
-// import java.sql.ResultSet;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 //imports de la interfaz grafica
 import javax.swing.*;
@@ -13,9 +13,6 @@ import Modelo.Conexion;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 public class Login extends JFrame {
 
@@ -133,16 +130,18 @@ public class Login extends JFrame {
                 String sql =
                         "SELECT * FROM usuarios " +
                         "WHERE identificacion=? " +
-                        "AND tipo_documento=? " +
+                        "AND tipoDocumento=? " +
                         "AND rol=? " +
                         "AND password=?";
 
+
                 PreparedStatement ps = con.prepareStatement(sql);
 
-                ps.setString(1, identificacion);
-                ps.setString(2, tipo);
-                ps.setString(3, rol);
-                ps.setString(4, pass);
+                ps.setString(1, identificacion);   // número de documento
+                ps.setString(2, tipo);             // CC, CE, TI, PPT
+                ps.setString(3, rol);              // Aprendiz, Instructor, Coordinador
+                ps.setString(4, pass);             // contraseña
+
 
                 ResultSet rs = ps.executeQuery();
 
@@ -154,10 +153,14 @@ public class Login extends JFrame {
                     // abrimos los paneles segun el rol
 
                     if (rol.equals("Aprendiz")) {
-
-                        new PanelAprendiz().setVisible(true);
-
-                    } else if (rol.equals("Instructor")) {
+                    new PanelAprendiz(
+                        rs.getString("nombre"),     // nombre real del aprendiz
+                        rs.getString("ficha"),      // ficha registrada
+                        rs.getInt("asistencia"),    // porcentaje asistencia
+                        rs.getInt("faltas"),        // número de faltas
+                        rs.getInt("tardanzas")      // número de tardanzas
+                         ).setVisible(true);
+                }else if (rol.equals("Instructor")) {
 
                         new panelInstructor().setVisible(true);
 
