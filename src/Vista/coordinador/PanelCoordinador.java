@@ -1,4 +1,4 @@
-package Vista;
+package Vista.coordinador;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,10 +56,19 @@ public class PanelCoordinador extends JFrame {
         program.setFont(new Font("Arial", Font.PLAIN, 30));
         panel.add(program);
 
-        // ================= BOTONES =================
-        btnFichas = new JButton("Gestión Fichas");
-        styleButton(btnFichas);
-        panel.add(btnFichas);
+       // ================= BOTONES =================
+btnFichas = new JButton("Gestión Fichas");
+styleButton(btnFichas);
+panel.add(btnFichas);
+
+        // ABRIR GESTIÓN DE FICHAS
+        btnFichas.addActionListener(e -> {
+
+            new gestionFichas().setVisible(true);
+
+            dispose();
+
+        });
 
         btnInstr = new JButton("Gestión Instructores");
         styleButton(btnInstr);
@@ -76,9 +85,8 @@ public class PanelCoordinador extends JFrame {
         btnExit.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Sesión cerrada");
             dispose();
-            new Login().setVisible(true);
+            new Vista.Login().setVisible(true);
         });
-
         // ================= RESPONSIVE ENGINE =================
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -128,7 +136,7 @@ public class PanelCoordinador extends JFrame {
 
     public static void main(String[] args) {
 
-        new PanelCoordinador(
+        new Vista.coordinador.PanelCoordinador(
                 "Ana Torres",
                 "Coordinación Académica"
         ).setVisible(true);

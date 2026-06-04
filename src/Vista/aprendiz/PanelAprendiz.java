@@ -1,7 +1,7 @@
-package Vista;
+package Vista.aprendiz;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.*; 
 
 public class PanelAprendiz extends JFrame {
 
@@ -70,7 +70,7 @@ public class PanelAprendiz extends JFrame {
         btnCerrar.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Sesión cerrada");
             dispose();
-            Login login = new Login();
+                Vista.Login login = new Vista.Login();
             login.setVisible(true);
         });
     }
