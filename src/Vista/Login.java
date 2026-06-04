@@ -1,3 +1,4 @@
+
 // =======================
 // Login.java
 // =======================
@@ -171,7 +172,8 @@ public class Login extends JFrame {
 
                     } else if (rol.equals("Instructor")) {
 
-                        new panelInstructor().setVisible(true);
+
+                        new panelInstructor( ).setVisible(true);
 
                     } else if (rol.equals("Coordinador")) {
 
