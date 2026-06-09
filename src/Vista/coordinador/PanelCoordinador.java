@@ -57,9 +57,9 @@ public class PanelCoordinador extends JFrame {
         panel.add(program);
 
        // ================= BOTONES =================
-btnFichas = new JButton("Gestión Fichas");
-styleButton(btnFichas);
-panel.add(btnFichas);
+        btnFichas = new JButton("Gestión Fichas");
+        styleButton(btnFichas);
+        panel.add(btnFichas);
 
         // ABRIR GESTIÓN DE FICHAS
         btnFichas.addActionListener(e -> {
@@ -73,6 +73,15 @@ panel.add(btnFichas);
         btnInstr = new JButton("Gestión Instructores");
         styleButton(btnInstr);
         panel.add(btnInstr);
+
+        btnFichas.addActionListener(e -> {
+
+            new gestionInstructores().setVisible(true);
+
+            dispose();
+
+        });
+
 
         btnAprendices = new JButton("Gestión Aprendices");
         styleButton(btnAprendices);
