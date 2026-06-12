@@ -141,8 +141,10 @@ public class consultarAsistencia extends JFrame {
 
         try {
 
-            String ruta = System.getProperty("user.home")
-                    + "\\Downloads\\ReporteAsistencia.pdf";
+           String ruta = System.getProperty("user.home")
+        + "\\Downloads\\ReporteAsistencia_"
+        + System.currentTimeMillis()
+        + ".pdf";
 
             Document documento = new Document();
 

@@ -10,182 +10,211 @@ import Modelo.Conexion;
 
 public class dialogInstructor extends JDialog {
 
-        private JTextField txtDocumento;
-        private JTextField txtNombre;
-        private JComboBox<String> cbTipoDocumento;
-        private JTextField txtEspecialidad;
+    private JTextField txtDocumento;
+    private JTextField txtNombre;
+    private JComboBox<String> cbTipoDocumento;
+    private JTextField txtEspecialidad;
 
-        private boolean modoEditar = false;
+    private boolean modoEditar = false;
 
     // AGREGAR
-        public dialogInstructor(JFrame parent) {
+    public dialogInstructor(JFrame parent) {
 
-                super(parent, "Agregar Instructor", true);
+        super(parent, "Agregar Instructor", true);
 
-                inicializarComponentes();
-        }
+        inicializarComponentes();
+    }
 
     // EDITAR
-        public dialogInstructor(
-                JFrame parent,
-                String identificacion,
-                String nombre,
-                String tipoDocumento,
-                String especialidad) {
+    public dialogInstructor(
+            JFrame parent,
+            String identificacion,
+            String nombre,
+            String tipoDocumento,
+            String numeroFicha,
+            String especialidad) {
 
-                super(parent, "Editar Instructor", true);
+        super(parent, "Editar Instructor", true);
 
-                modoEditar = true;
+        modoEditar = true;
 
-                inicializarComponentes();
+        inicializarComponentes();
 
-                txtDocumento.setText(identificacion);
-                txtNombre.setText(nombre);
-                cbTipoDocumento.setSelectedItem(tipoDocumento);
-                txtEspecialidad.setText(especialidad);
+        txtDocumento.setText(identificacion);
+        txtNombre.setText(nombre);
+        cbTipoDocumento.setSelectedItem(tipoDocumento);
+        txtEspecialidad.setText(especialidad);
 
-                txtDocumento.setEditable(false);
-        }
+        txtDocumento.setEditable(false);
+    }
 
-        private void inicializarComponentes() {
+    private void inicializarComponentes() {
 
-                setSize(500, 400);
-                setLocationRelativeTo(getParent());
-                setLayout(null);
+        setSize(500, 400);
+        setLocationRelativeTo(getParent());
+        setLayout(null);
 
-                JLabel lblDocumento = new JLabel("Documento:");
-                lblDocumento.setBounds(40, 40, 120, 30);
-                add(lblDocumento);
+        JLabel lblDocumento = new JLabel("Documento:");
+        lblDocumento.setBounds(40, 40, 120, 30);
+        add(lblDocumento);
 
-                txtDocumento = new JTextField();
-                txtDocumento.setBounds(170, 40, 250, 30);
-                add(txtDocumento);
+        txtDocumento = new JTextField();
+        txtDocumento.setBounds(170, 40, 250, 30);
+        add(txtDocumento);
 
-                JLabel lblNombre = new JLabel("Nombre:");
-                lblNombre.setBounds(40, 90, 120, 30);
-                add(lblNombre);
+        JLabel lblNombre = new JLabel("Nombre:");
+        lblNombre.setBounds(40, 90, 120, 30);
+        add(lblNombre);
 
-                txtNombre = new JTextField();
-                txtNombre.setBounds(170, 90, 250, 30);
-                add(txtNombre);
+        txtNombre = new JTextField();
+        txtNombre.setBounds(170, 90, 250, 30);
+        add(txtNombre);
 
-                JLabel lblTipo = new JLabel("Tipo Documento:");
-                lblTipo.setBounds(40, 140, 120, 30);
-                add(lblTipo);
+        JLabel lblTipo = new JLabel("Tipo Documento:");
+        lblTipo.setBounds(40, 140, 120, 30);
+        add(lblTipo);
 
-                cbTipoDocumento = new JComboBox<>(
-                        new String[]{"CC", "TI", "CE", "PPT"});
-                cbTipoDocumento.setBounds(170, 140, 250, 30);
-                add(cbTipoDocumento);
+        cbTipoDocumento = new JComboBox<>(
+                new String[]{"CC", "TI", "CE", "PPT"});
+        cbTipoDocumento.setBounds(170, 140, 250, 30);
+        add(cbTipoDocumento);
 
-                JLabel lblEspecialidad = new JLabel("Especialidad:");
-                lblEspecialidad.setBounds(40, 190, 120, 30);
-                add(lblEspecialidad);
+        JLabel lblEspecialidad = new JLabel("Especialidad:");
+        lblEspecialidad.setBounds(40, 190, 120, 30);
+        add(lblEspecialidad);
 
-                txtEspecialidad = new JTextField();
-                txtEspecialidad.setBounds(170, 190, 250, 30);
-                add(txtEspecialidad);
+        txtEspecialidad = new JTextField();
+        txtEspecialidad.setBounds(170, 190, 250, 30);
+        add(txtEspecialidad);
 
-                JButton btnGuardar = new JButton("Guardar");
-                btnGuardar.setBounds(120, 280, 120, 40);
-                add(btnGuardar);
+        JButton btnGuardar = new JButton("Guardar");
+        btnGuardar.setBounds(120, 280, 120, 40);
+        add(btnGuardar);
 
-                JButton btnCancelar = new JButton("Cancelar");
-                btnCancelar.setBounds(260, 280, 120, 40);
-                add(btnCancelar);
+        JButton btnCancelar = new JButton("Cancelar");
+        btnCancelar.setBounds(260, 280, 120, 40);
+        add(btnCancelar);
 
-                btnCancelar.addActionListener(e -> dispose());
+        btnCancelar.addActionListener(e -> dispose());
 
-                btnGuardar.addActionListener(e -> guardarInstructor());
-        }
+        btnGuardar.addActionListener(e -> guardarInstructor());
+    }
 
-        private void guardarInstructor() {
+    private void guardarInstructor() {
 
-                try {
+        try {
 
-                Connection con = Conexion.conectar();
+            Connection con = Conexion.conectar();
 
-                if (!modoEditar) {
+            if (!modoEditar) {
 
-                        String sqlUsuario =
-                                "INSERT INTO usuarios " +
-                                "(identificacion,tipoDocumento,rol,password,nombre) " +
-                                "VALUES(?,?, 'Instructor','123456', ?)";
+                // Insertar usuario
+                String sqlUsuario =
+                        "INSERT INTO usuarios " +
+                        "(identificacion,tipoDocumento,rol,password,nombre) " +
+                        "VALUES(?,?, 'Instructor','123456', ?)";
 
-                        PreparedStatement psUsuario =con.prepareStatement(sqlUsuario,PreparedStatement.RETURN_GENERATED_KEYS);
+                PreparedStatement psUsuario =
+                        con.prepareStatement(
+                                sqlUsuario,
+                                PreparedStatement.RETURN_GENERATED_KEYS);
 
-                        psUsuario.setString(1, txtDocumento.getText());
-                        psUsuario.setString(2, cbTipoDocumento.getSelectedItem().toString());
-                        psUsuario.setString(3, txtNombre.getText());
+                psUsuario.setString(1, txtDocumento.getText());
+                psUsuario.setString(2,
+                        cbTipoDocumento.getSelectedItem().toString());
+                psUsuario.setString(3, txtNombre.getText());
 
-                        psUsuario.executeUpdate();
+                psUsuario.executeUpdate();
 
-                        ResultSet rs = psUsuario.getGeneratedKeys();
+                ResultSet rs = psUsuario.getGeneratedKeys();
 
-                        int idUsuario = 0;
+                int idUsuario = 0;
 
-                        if (rs.next()) {idUsuario = rs.getInt(1);}
-
-                        String sqlInstructor ="INSERT INTO instructor(especialidad,id) VALUES(?,?)";
-
-                        PreparedStatement psInstructor =con.prepareStatement(sqlInstructor);
-
-                        psInstructor.setString( 1,txtEspecialidad.getText());
-
-                        psInstructor.setInt(2,idUsuario);
-
-                        psInstructor.executeUpdate();
-
-                        JOptionPane.showMessageDialog(
-                                this,
-                                "Instructor agregado correctamente");
-
-                } else {
-
-                        String sqlUsuario =
-                                "UPDATE usuarios " +
-                                "SET nombre=?, tipoDocumento=? " +
-                                "WHERE identificacion=?";
-
-                        PreparedStatement psUsuario =
-                                con.prepareStatement(sqlUsuario);
-
-                        psUsuario.setString(1,txtNombre.getText());
-
-                        psUsuario.setString(2,cbTipoDocumento.getSelectedItem().toString());
-
-                        psUsuario.setString(3,txtDocumento.getText());
-
-                        psUsuario.executeUpdate();
-
-                        String sqlInstructor =
-                                "UPDATE instructor i " +
-                                "INNER JOIN usuarios u ON i.id = u.id " +
-                                "SET i.especialidad=? " +
-                                "WHERE u.identificacion=?";
-
-                        PreparedStatement psInstructor =
-                                con.prepareStatement(sqlInstructor);
-
-                        psInstructor.setString(
-                                1,
-                                txtEspecialidad.getText());
-
-                        psInstructor.setString(
-                                2,
-                                txtDocumento.getText());
-                        psInstructor.executeUpdate();
-                        JOptionPane.showMessageDialog(
-                                this,
-                                "Instructor actualizado correctamente");
+                if (rs.next()) {
+                    idUsuario = rs.getInt(1);
                 }
-                con.close();
-                dispose();
-                } catch (Exception ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(
-                                this,
-                                "Error al guardar instructor");
-                }
+
+                // Insertar instructor
+                String sqlInstructor =
+                        "INSERT INTO instructor(especialidad,id) VALUES(?,?)";
+
+                PreparedStatement psInstructor =
+                        con.prepareStatement(sqlInstructor);
+
+                psInstructor.setString(
+                        1,
+                        txtEspecialidad.getText());
+
+                psInstructor.setInt(
+                        2,
+                        idUsuario);
+
+                psInstructor.executeUpdate();
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Instructor agregado correctamente");
+
+            } else {
+
+                // Actualizar usuario
+                String sqlUsuario =
+                        "UPDATE usuarios " +
+                        "SET nombre=?, tipoDocumento=? " +
+                        "WHERE identificacion=?";
+
+                PreparedStatement psUsuario =
+                        con.prepareStatement(sqlUsuario);
+
+                psUsuario.setString(1, txtNombre.getText());
+
+                psUsuario.setString(
+                        2,
+                        cbTipoDocumento.getSelectedItem().toString());
+
+                psUsuario.setString(
+                        3,
+                        txtDocumento.getText());
+
+                psUsuario.executeUpdate();
+
+                // Actualizar instructor (compatible con SQLite)
+                String sqlInstructor =
+                        "UPDATE instructor " +
+                        "SET especialidad=? " +
+                        "WHERE id = (" +
+                        "SELECT id FROM usuarios " +
+                        "WHERE identificacion=?)";
+
+                PreparedStatement psInstructor =
+                        con.prepareStatement(sqlInstructor);
+
+                psInstructor.setString(
+                        1,
+                        txtEspecialidad.getText());
+
+                psInstructor.setString(
+                        2,
+                        txtDocumento.getText());
+
+                psInstructor.executeUpdate();
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Instructor actualizado correctamente");
+            }
+
+            con.close();
+
+            dispose();
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    ex.getMessage());
         }
+    }
 }

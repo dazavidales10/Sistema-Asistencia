@@ -147,6 +147,7 @@ public class gestionInstructores extends JFrame {
             "Documento",
             "Nombre",
             "Tipo Documento",
+            "Ficha",
             "Especialidad",
             "Seleccionar"
         };
@@ -155,12 +156,12 @@ public class gestionInstructores extends JFrame {
 
             @Override
             public Class<?> getColumnClass(int column) {
-                return column == 4 ? Boolean.class : String.class;
+                return column == 5 ? Boolean.class : String.class;
             }
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 4;
+                return column == 5;
             }
         };
 
@@ -197,6 +198,7 @@ public class gestionInstructores extends JFrame {
         tablaInstructores.getColumnModel().getColumn(2).setPreferredWidth(250);
         tablaInstructores.getColumnModel().getColumn(3).setPreferredWidth(180);
         tablaInstructores.getColumnModel().getColumn(4).setPreferredWidth(250);
+        tablaInstructores.getColumnModel().getColumn(5).setPreferredWidth(250);
 
         JScrollPane scrollTabla = new JScrollPane(tablaInstructores);
 
@@ -226,7 +228,7 @@ public class gestionInstructores extends JFrame {
 
             for (int i = 0; i < modeloTabla.getRowCount(); i++) {
 
-                Boolean seleccionado = (Boolean) modeloTabla.getValueAt(i, 4);
+                Boolean seleccionado = (Boolean) modeloTabla.getValueAt(i, 5);
 
                 if (seleccionado != null && seleccionado) {
                     filaSeleccionada = i;
@@ -281,7 +283,7 @@ public class gestionInstructores extends JFrame {
             for (int i = 0; i < modeloTabla.getRowCount(); i++) {
 
                 Boolean seleccionado =
-                        (Boolean) modeloTabla.getValueAt(i, 4);
+                        (Boolean) modeloTabla.getValueAt(i, 5);
 
                 if (seleccionado != null && seleccionado) {
 
@@ -304,8 +306,9 @@ public class gestionInstructores extends JFrame {
             String nombre = modeloTabla.getValueAt(filaSeleccionada, 1).toString();
 
             String tipoDocumento = modeloTabla.getValueAt(filaSeleccionada, 2).toString();
-
-            String especialidad = modeloTabla.getValueAt(filaSeleccionada, 3).toString();
+            
+            String numeroFicha = modeloTabla.getValueAt(filaSeleccionada, 3).toString();
+            String especialidad = modeloTabla.getValueAt(filaSeleccionada, 4).toString();
 
             dialogInstructor dialog =
                     new dialogInstructor(
@@ -313,6 +316,7 @@ public class gestionInstructores extends JFrame {
                             identificacion,
                             nombre,
                             tipoDocumento,
+                            numeroFicha,
                             especialidad);
 
             dialog.setVisible(true);
@@ -332,26 +336,32 @@ public class gestionInstructores extends JFrame {
             Connection con = Conexion.conectar();
 
             String sql =
-                "SELECT u.identificacion, " +
-                "u.nombre, " +
-                "u.tipoDocumento, " +
-                "i.especialidad " +
-                "FROM usuarios u " +
-                "INNER JOIN instructor i ON u.id = i.id " +
-                "WHERE u.rol = 'Instructor'";
+                    "SELECT " +
+                    "u.identificacion, " +
+                    "u.nombre, " +
+                    "u.tipoDocumento, " +
+                    "i.numeroFicha, " +
+                    "i.especialidad " +
+                    "FROM usuarios u " +
+                    "INNER JOIN instructor i ON u.id = i.id " +
+                    "WHERE u.rol = 'Instructor'";
 
-            PreparedStatement ps = con.prepareStatement(sql);
+            PreparedStatement ps =
+                    con.prepareStatement(sql);
 
-            ResultSet rs = ps.executeQuery();
+            ResultSet rs =
+                    ps.executeQuery();
 
             while (rs.next()) {
 
                 modeloTabla.addRow(new Object[]{
-                    rs.getString("identificacion"),
-                    rs.getString("nombre"),
-                    rs.getString("tipoDocumento"),
-                    rs.getString("especialidad"),
-                    false
+
+                        rs.getString("identificacion"),
+                        rs.getString("nombre"),
+                        rs.getString("tipoDocumento"),
+                        rs.getString("numeroFicha"),
+                        rs.getString("especialidad"),
+                        false
                 });
             }
 
@@ -365,10 +375,9 @@ public class gestionInstructores extends JFrame {
 
             JOptionPane.showMessageDialog(
                     null,
-                    "Error al cargar instructores");
+                    e.getMessage());
         }
     }
 
 
 }
-
