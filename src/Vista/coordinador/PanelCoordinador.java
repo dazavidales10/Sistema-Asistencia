@@ -1,6 +1,10 @@
 package Vista.coordinador;
 
 import javax.swing.*;
+
+import Vista.coordinador.Gestion.gestionFichas;
+import Vista.coordinador.Gestion.gestionInstructores;
+
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -13,7 +17,14 @@ public class PanelCoordinador extends JFrame {
 
     private JButton btnFichas, btnInstr, btnAprendices, btnExit;
 
+    private String nombre;
+    private String area;
+
     public PanelCoordinador(String nombre, String area) {
+
+        this.area = area;
+        this.nombre = nombre;
+
 
         setTitle("Panel Coordinador");
         setSize(1920, 1080);
@@ -74,9 +85,9 @@ public class PanelCoordinador extends JFrame {
         styleButton(btnInstr);
         panel.add(btnInstr);
 
-        btnFichas.addActionListener(e -> {
+        btnInstr.addActionListener(e -> {
 
-            new gestionInstructores().setVisible(true);
+            new gestionInstructores(nombre,area).setVisible(true);
 
             dispose();
 
@@ -107,7 +118,7 @@ public class PanelCoordinador extends JFrame {
         resizeComponents();
     }
 
-    // ================= RESPONSIVE POSITIONING =================
+    
     private void resizeComponents() {
 
         int w = getWidth();

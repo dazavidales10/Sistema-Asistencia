@@ -1,4 +1,4 @@
-package Vista.coordinador;
+package Vista.coordinador.Gestion;
 
 
 import java.sql.Connection;
@@ -11,24 +11,27 @@ import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
 
-// import java.sql.ResultSet;
-import java.awt.*;
 // import java.awt.event.MouseAdapter;
 // import java.awt.event.MouseEvent;
-
 // import org.w3c.dom.events.MouseEvent;
+
 import Modelo.Conexion;
+import Vista.coordinador.PanelCoordinador;
+import Vista.coordinador.Dialogs.dialogInstructor;
 
 public class gestionInstructores extends JFrame {
 
     private JTable tablaInstructores;
     private DefaultTableModel modeloTabla;
-
+    private String nombreCoordinador;
+    private String areaCoordinador;
     private JTextField txtNumeroFicha;
-    private JTextField txtNombrePrograma;
-    private JComboBox<String> cbJornadaS;
 
-    public gestionInstructores() {
+    public gestionInstructores(String nombreCoordinador,
+        String areaCoordinador) {
+
+        this.nombreCoordinador = nombreCoordinador;
+        this.areaCoordinador = areaCoordinador;
         
         setTitle("Panel instructor");
         setSize(1920, 1080);
@@ -52,6 +55,22 @@ public class gestionInstructores extends JFrame {
         arrow.setForeground(Color.white);
         arrow.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
         panel.add(arrow);
+
+        //Devolverte con el Arrow 
+
+        arrow.addMouseListener(new java.awt.event.MouseAdapter() {
+
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+
+                new PanelCoordinador(
+                        nombreCoordinador,
+                        areaCoordinador
+                ).setVisible(true);
+
+                dispose();
+            }
+        });
 
         JLabel lblCoordinador = new JLabel("Gestion Instructores");
         lblCoordinador.setForeground(Color.white);
@@ -121,30 +140,33 @@ public class gestionInstructores extends JFrame {
         panel.add(btnExportar);
 
 
+        //Tabla buscador de los Instructores
+
         String[] columnas = {
-            "Seleccionar",
+
             "Documento",
             "Nombre",
             "Tipo Documento",
-            "Especialidad"
+            "Especialidad",
+            "Seleccionar"
         };
 
         modeloTabla = new DefaultTableModel(columnas, 0) {
 
             @Override
             public Class<?> getColumnClass(int column) {
-                return column == 0 ? Boolean.class : String.class;
+                return column == 4 ? Boolean.class : String.class;
             }
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 0;
+                return column == 4;
             }
         };
 
         tablaInstructores = new JTable(modeloTabla);
 
-        // Apariencia
+        
         tablaInstructores.setRowHeight(50);
         tablaInstructores.setFont(new Font("Arial", Font.BOLD, 18));
 
@@ -154,25 +176,22 @@ public class gestionInstructores extends JFrame {
         tablaInstructores.setSelectionBackground(new Color(220, 255, 220));
         tablaInstructores.setSelectionForeground(Color.BLACK);
 
-        // Encabezado
-        tablaInstructores.getTableHeader().setFont(
-                new Font("Arial", Font.BOLD, 20));
-
+        
+        tablaInstructores.getTableHeader().setFont(new Font("Arial", Font.BOLD, 20));
         tablaInstructores.getTableHeader().setBackground(Color.WHITE);
         tablaInstructores.getTableHeader().setForeground(Color.BLACK);
         tablaInstructores.getTableHeader().setReorderingAllowed(false);
 
-        // Centrar texto
         DefaultTableCellRenderer centro = new DefaultTableCellRenderer();
         centro.setHorizontalAlignment(SwingConstants.CENTER);
 
-        for (int i = 1; i < tablaInstructores.getColumnCount(); i++) {
+        for (int i = 0; i < 4; i++) {
             tablaInstructores.getColumnModel()
                     .getColumn(i)
                     .setCellRenderer(centro);
         }
 
-        // Tamaño columnas
+        
         tablaInstructores.getColumnModel().getColumn(0).setPreferredWidth(80);
         tablaInstructores.getColumnModel().getColumn(1).setPreferredWidth(250);
         tablaInstructores.getColumnModel().getColumn(2).setPreferredWidth(250);
@@ -191,37 +210,14 @@ public class gestionInstructores extends JFrame {
         cargarInstructores();
 
 
-
-        //Aciones de los Botones
-
         btnAgregar.addActionListener(e -> {
 
-            String numeroFicha = txtNumeroFicha.getText();
-            String programa = txtNombrePrograma.getText();
-            String jornada = cbJornadaS.getSelectedItem().toString();
+            dialogInstructor dialog =
+                    new dialogInstructor(this);
 
-            try {
+            dialog.setVisible(true);
 
-                Connection con = Conexion.conectar();
-
-                String sql = "INSERT INTO usuarios (identificacion, tipoDocumento, rol, password, nombre) VALUES (?, ?, ?, 'Instructor', ?, ?)";
-
-                PreparedStatement ps = con.prepareStatement(sql);
-
-                ps.setString(1, programa);
-                ps.setString(2, numeroFicha);
-                ps.setString(3, jornada);
-
-                ps.executeUpdate();
-
-                JOptionPane.showMessageDialog(null, "Ficha agregada correctamente");
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al agregar ficha");
-            }
-            txtNumeroFicha.setText(" ");
-            txtNombrePrograma.setText(" "); 
+            cargarInstructores();
         });
 
         btnEliminar.addActionListener(e -> {
@@ -230,8 +226,7 @@ public class gestionInstructores extends JFrame {
 
             for (int i = 0; i < modeloTabla.getRowCount(); i++) {
 
-                Boolean seleccionado =
-                        (Boolean) modeloTabla.getValueAt(i, 0);
+                Boolean seleccionado = (Boolean) modeloTabla.getValueAt(i, 4);
 
                 if (seleccionado != null && seleccionado) {
                     filaSeleccionada = i;
@@ -248,7 +243,7 @@ public class gestionInstructores extends JFrame {
                 return;
             }
 
-            String identificacion = modeloTabla.getValueAt(filaSeleccionada, 1).toString();
+            String identificacion = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
 
             try {
 
@@ -280,7 +275,49 @@ public class gestionInstructores extends JFrame {
         });
 
         btnEditar.addActionListener(e -> {
-            
+
+            int filaSeleccionada = -1;
+
+            for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+
+                Boolean seleccionado =
+                        (Boolean) modeloTabla.getValueAt(i, 4);
+
+                if (seleccionado != null && seleccionado) {
+
+                    filaSeleccionada = i;
+                    break;
+                }
+            }
+
+            if (filaSeleccionada == -1) {
+
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Seleccione un instructor");
+
+                return;
+            }
+
+            String identificacion = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
+
+            String nombre = modeloTabla.getValueAt(filaSeleccionada, 1).toString();
+
+            String tipoDocumento = modeloTabla.getValueAt(filaSeleccionada, 2).toString();
+
+            String especialidad = modeloTabla.getValueAt(filaSeleccionada, 3).toString();
+
+            dialogInstructor dialog =
+                    new dialogInstructor(
+                            this,
+                            identificacion,
+                            nombre,
+                            tipoDocumento,
+                            especialidad);
+
+            dialog.setVisible(true);
+
+            cargarInstructores();
         });
 
         
@@ -310,11 +347,11 @@ public class gestionInstructores extends JFrame {
             while (rs.next()) {
 
                 modeloTabla.addRow(new Object[]{
-                    false,
                     rs.getString("identificacion"),
                     rs.getString("nombre"),
                     rs.getString("tipoDocumento"),
-                    rs.getString("especialidad")
+                    rs.getString("especialidad"),
+                    false
                 });
             }
 
@@ -333,8 +370,5 @@ public class gestionInstructores extends JFrame {
     }
 
 
-    public static void main(String[] args) {
-        new gestionInstructores().setVisible(true);
-    }
 }
 

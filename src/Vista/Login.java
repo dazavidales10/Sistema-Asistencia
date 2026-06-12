@@ -169,15 +169,18 @@ public class Login extends JFrame {
                                 2,
                                 1
                         ).setVisible(true);
-   
+
                     } else if (rol.equals("Instructor")) {
 
 
                         new Vista.instructor.panelInstructor( ).setVisible(true);
 
                     } else if (rol.equals("Coordinador")) {
-
+                        System.out.println("Nombre: " + rs.getString("nombre"));
+                        System.out.println("Area: " + rs.getString("area"));
+                        System.out.println("Rol: " + rs.getString("rol"));
                         new Vista.coordinador.PanelCoordinador(
+
                                 rs.getString("nombre"),
                                 rs.getString("area")
                         ).setVisible(true);
