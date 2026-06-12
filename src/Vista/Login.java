@@ -179,8 +179,11 @@ public class Login extends JFrame {
                         ).setVisible(true);
 
                     } else if (rol.equals("Coordinador")) {
-
+                        System.out.println("Nombre: " + rs.getString("nombre"));
+                        System.out.println("Area: " + rs.getString("area"));
+                        System.out.println("Rol: " + rs.getString("rol"));
                         new Vista.coordinador.PanelCoordinador(
+
                                 rs.getString("nombre"),
                                 rs.getString("area")
                         ).setVisible(true);
