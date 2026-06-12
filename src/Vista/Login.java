@@ -1,8 +1,3 @@
-
-// =======================
-// Login.java
-// =======================
-
 package Vista;
 
 import java.sql.Connection;
@@ -10,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import javax.swing.*;
+
 import Modelo.Conexion;
 
 import java.awt.*;
@@ -94,14 +90,18 @@ public class Login extends JFrame {
         panel.add(eye);
 
         eye.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseClicked(MouseEvent e) {
 
                 if (mostrar) {
+
                     txtPass.setEchoChar('•');
                     eye.setText("👁");
                     mostrar = false;
+
                 } else {
+
                     txtPass.setEchoChar((char) 0);
                     eye.setText("/");
                     mostrar = true;
@@ -127,16 +127,16 @@ public class Login extends JFrame {
 
                 Connection con = Conexion.conectar();
 
-                // =======================
-                // SQL UNIFICADO CORRECTO
-                // =======================
                 String sql =
                         "SELECT u.*, " +
-                        "a.numeroFicha, a.programa, " +
-                        "c.area " +
+                        "a.numeroFicha, " +
+                        "a.programa, " +
+                        "c.area, " +
+                        "i.especialidad " +
                         "FROM usuarios u " +
                         "LEFT JOIN aprendiz a ON u.id = a.id " +
                         "LEFT JOIN coordinador c ON u.id = c.id " +
+                        "LEFT JOIN instructor i ON u.id = i.id " +
                         "WHERE u.identificacion = ? " +
                         "AND u.tipoDocumento = ? " +
                         "AND u.rol = ? " +
@@ -153,27 +153,30 @@ public class Login extends JFrame {
 
                 if (rs.next()) {
 
-                    JOptionPane.showMessageDialog(this,
-                            "Bienvenido " + rs.getString("nombre"));
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Bienvenido " + rs.getString("nombre")
+                    );
 
                     // =======================
-                    // ABRIR SEGUN ROL
+                    // ABRIR SEGÚN EL ROL
                     // =======================
 
                     if (rol.equals("Aprendiz")) {
 
                         new Vista.aprendiz.PanelAprendiz(
+                                rs.getInt("id"),
                                 rs.getString("nombre"),
-                                rs.getString("numeroFicha"),
-                                95,
-                                2,
-                                1
+                                rs.getString("numeroFicha")
                         ).setVisible(true);
-   
+
                     } else if (rol.equals("Instructor")) {
 
-
-                        new Vista.instructor.panelInstructor( ).setVisible(true);
+                        new Vista.instructor.panelInstructor(
+                                rs.getString("nombre"),
+                                "N/A",
+                                rs.getString("especialidad")
+                        ).setVisible(true);
 
                     } else if (rol.equals("Coordinador")) {
 
@@ -187,12 +190,24 @@ public class Login extends JFrame {
 
                 } else {
 
-                    JOptionPane.showMessageDialog(this,
-                            "Credenciales incorrectas");
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Credenciales incorrectas"
+                    );
                 }
 
+                rs.close();
+                ps.close();
+                con.close();
+
             } catch (Exception ex) {
+
                 ex.printStackTrace();
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Error al conectar con la base de datos"
+                );
             }
         });
     }
