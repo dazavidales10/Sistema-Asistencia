@@ -146,6 +146,11 @@ public class PanelAprendiz extends JFrame {
             new consultarAsistencia(idUsuario).setVisible(true);
 
         });
+        btnHistorial.addActionListener(e -> {
+
+            new historialAsistencia(idUsuario).setVisible(true);
+
+        });
 
         // ================= CARGAR DATOS =================
 
@@ -282,3 +287,4 @@ public class PanelAprendiz extends JFrame {
         });
     }
 }
+ 

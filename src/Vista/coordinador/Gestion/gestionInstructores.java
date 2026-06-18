@@ -228,7 +228,8 @@ public class gestionInstructores extends JFrame {
 
             for (int i = 0; i < modeloTabla.getRowCount(); i++) {
 
-                Boolean seleccionado = (Boolean) modeloTabla.getValueAt(i, 5);
+                Boolean seleccionado =
+                        (Boolean) modeloTabla.getValueAt(i, 5);
 
                 if (seleccionado != null && seleccionado) {
                     filaSeleccionada = i;
@@ -245,35 +246,71 @@ public class gestionInstructores extends JFrame {
                 return;
             }
 
-            String identificacion = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
+            String identificacion =
+                    modeloTabla.getValueAt(
+                            filaSeleccionada,
+                            0).toString();
 
             try {
 
                 Connection con = Conexion.conectar();
 
-                String sql =
-                        "DELETE FROM usuarios WHERE identificacion = ?";
+                String sqlBuscar =
+                        "SELECT id FROM usuarios " +
+                        "WHERE identificacion = ?";
 
-                PreparedStatement ps = con.prepareStatement(sql);
+                PreparedStatement psBuscar =
+                        con.prepareStatement(sqlBuscar);
 
-                ps.setString(1, identificacion);
+                psBuscar.setString(1, identificacion);
 
-                int filas = ps.executeUpdate();
+                ResultSet rs = psBuscar.executeQuery();
 
-                if (filas > 0) {
+                if (rs.next()) {
 
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Instructor eliminado");
+                    int idUsuario = rs.getInt("id");
 
-                    cargarInstructores();
+                    PreparedStatement psInstructor =
+                            con.prepareStatement(
+                                    "DELETE FROM instructor WHERE id = ?");
+
+                    psInstructor.setInt(1, idUsuario);
+
+                    psInstructor.executeUpdate();
+
+                    PreparedStatement psUsuario =
+                            con.prepareStatement(
+                                    "DELETE FROM usuarios WHERE id = ?");
+
+                    psUsuario.setInt(1, idUsuario);
+
+                    int filas = psUsuario.executeUpdate();
+
+                    if (filas > 0) {
+
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Instructor eliminado correctamente");
+
+                        cargarInstructores();
+                    }
+
+                    psInstructor.close();
+                    psUsuario.close();
                 }
+
+                rs.close();
+                psBuscar.close();
+                con.close();
 
             } catch (Exception ex) {
 
                 ex.printStackTrace();
-            } 
 
+                JOptionPane.showMessageDialog(
+                        null,
+                        ex.getMessage());
+            }
         });
 
         btnEditar.addActionListener(e -> {
@@ -353,6 +390,12 @@ public class gestionInstructores extends JFrame {
                     ps.executeQuery();
 
             while (rs.next()) {
+
+                System.out.println(
+                    rs.getString("identificacion") + " | " +
+                    rs.getString("numeroFicha") + " | " +
+                    rs.getString("especialidad")
+                );
 
                 modeloTabla.addRow(new Object[]{
 

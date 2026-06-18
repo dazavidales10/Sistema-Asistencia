@@ -13,8 +13,8 @@ public class dialogInstructor extends JDialog {
     private JTextField txtDocumento;
     private JTextField txtNombre;
     private JComboBox<String> cbTipoDocumento;
+    private JTextField txtnumeroFicha;
     private JTextField txtEspecialidad;
-
     private boolean modoEditar = false;
 
     // AGREGAR
@@ -43,6 +43,7 @@ public class dialogInstructor extends JDialog {
         txtDocumento.setText(identificacion);
         txtNombre.setText(nombre);
         cbTipoDocumento.setSelectedItem(tipoDocumento);
+        txtnumeroFicha.setText(numeroFicha);
         txtEspecialidad.setText(especialidad);
 
         txtDocumento.setEditable(false);
@@ -79,12 +80,20 @@ public class dialogInstructor extends JDialog {
         cbTipoDocumento.setBounds(170, 140, 250, 30);
         add(cbTipoDocumento);
 
+        JLabel lblnumeroFicha = new JLabel("Numero Ficha:");
+        lblnumeroFicha.setBounds(40, 190, 120, 30);
+        add(lblnumeroFicha);
+
+        txtnumeroFicha = new JTextField();
+        txtnumeroFicha.setBounds(170, 190, 250, 30);
+        add(txtnumeroFicha);
+
         JLabel lblEspecialidad = new JLabel("Especialidad:");
-        lblEspecialidad.setBounds(40, 190, 120, 30);
+        lblEspecialidad.setBounds(40, 230, 120, 30);
         add(lblEspecialidad);
 
         txtEspecialidad = new JTextField();
-        txtEspecialidad.setBounds(170, 190, 250, 30);
+        txtEspecialidad.setBounds(170, 230, 250, 30);
         add(txtEspecialidad);
 
         JButton btnGuardar = new JButton("Guardar");
@@ -98,6 +107,8 @@ public class dialogInstructor extends JDialog {
         btnCancelar.addActionListener(e -> dispose());
 
         btnGuardar.addActionListener(e -> guardarInstructor());
+
+        
     }
 
     private void guardarInstructor() {
@@ -136,7 +147,7 @@ public class dialogInstructor extends JDialog {
 
                 // Insertar instructor
                 String sqlInstructor =
-                        "INSERT INTO instructor(especialidad,id) VALUES(?,?)";
+                        "INSERT INTO instructor(especialidad,id,numeroFicha) VALUES(?,?,?)";
 
                 PreparedStatement psInstructor =
                         con.prepareStatement(sqlInstructor);
@@ -148,6 +159,8 @@ public class dialogInstructor extends JDialog {
                 psInstructor.setInt(
                         2,
                         idUsuario);
+                        
+                psInstructor.setString(3, txtnumeroFicha.getText());
 
                 psInstructor.executeUpdate();
 
@@ -178,7 +191,7 @@ public class dialogInstructor extends JDialog {
 
                 psUsuario.executeUpdate();
 
-                // Actualizar instructor (compatible con SQLite)
+                // Actualizar instructor 
                 String sqlInstructor =
                         "UPDATE instructor " +
                         "SET especialidad=? " +
