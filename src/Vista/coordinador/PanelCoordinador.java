@@ -2,6 +2,7 @@ package Vista.coordinador;
 
 import javax.swing.*;
 
+import Vista.coordinador.Gestion.gestionAprendices;
 import Vista.coordinador.Gestion.gestionFichas;
 import Vista.coordinador.Gestion.gestionInstructores;
 
@@ -97,6 +98,14 @@ public class PanelCoordinador extends JFrame {
         btnAprendices = new JButton("Gestión Aprendices");
         styleButton(btnAprendices);
         panel.add(btnAprendices);
+
+        btnAprendices.addActionListener(e -> {
+
+            new gestionAprendices(nombre,area).setVisible(true);
+
+            dispose();
+
+        });
 
         btnExit = new JButton("Cerrar Sesion");
         styleButton(btnExit);
