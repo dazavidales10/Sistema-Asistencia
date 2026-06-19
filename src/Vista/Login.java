@@ -12,6 +12,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+//Recordar iniciar sesion 
+import java.util.prefs.Preferences;
+
 public class Login extends JFrame {
 
     private boolean mostrar = false;
@@ -20,7 +23,75 @@ public class Login extends JFrame {
     private JComboBox<String> cbTipo;
     private JComboBox<String> cbRol;
 
+    private Preferences prefs = Preferences.userNodeForPackage(Login.class);
+
     public Login() {
+
+        int idGuardado = prefs.getInt("idUsuario", -1);
+        System.out.println("ID GUARDADO = " + idGuardado);
+
+        if (idGuardado != -1) {
+
+            try {
+
+                Connection con = Conexion.conectar();
+
+                String sql =
+                    "SELECT u.*, " +
+                    "a.numeroFicha, " +
+                    "c.area, " +
+                    "i.especialidad " +
+                    "FROM usuarios u " +
+                    "LEFT JOIN aprendiz a ON u.id = a.id " +
+                    "LEFT JOIN coordinador c ON u.id = c.id " +
+                    "LEFT JOIN instructor i ON u.id = i.id " +
+                    "WHERE u.id = ?";
+
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setInt(1, idGuardado);
+
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
+
+                    String rol = rs.getString("rol");
+
+                    if (rol.equals("Aprendiz")) {
+
+                        new Vista.aprendiz.PanelAprendiz(
+                            rs.getInt("id"),
+                            rs.getString("nombre"),
+                            rs.getString("numeroFicha")
+                        ).setVisible(true);
+
+                    } else if (rol.equals("Instructor")) {
+
+                        new Vista.instructor.panelInstructor(
+                            rs.getString("nombre"),
+                            "N/A",
+                            rs.getString("especialidad")
+                        ).setVisible(true);
+
+                    } else if (rol.equals("Coordinador")) {
+
+                        new Vista.coordinador.PanelCoordinador(
+                            rs.getString("nombre"),
+                            rs.getString("area")
+                        ).setVisible(true);
+                    }
+
+                    rs.close();
+                    ps.close();
+                    con.close();
+
+                    dispose();
+                    return;
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
 
         setTitle("Login");
         setSize(450, 350);
@@ -84,36 +155,12 @@ public class Login extends JFrame {
         txtPass.setBounds(170, 150, 200, 25);
         panel.add(txtPass);
 
-        JLabel eye = new JLabel("👁");
-        eye.setBounds(380, 150, 30, 25);
-        eye.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        panel.add(eye);
-
-        eye.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-                if (mostrar) {
-
-                    txtPass.setEchoChar('•');
-                    eye.setText("👁");
-                    mostrar = false;
-
-                } else {
-
-                    txtPass.setEchoChar((char) 0);
-                    eye.setText("/");
-                    mostrar = true;
-                }
-            }
-        });
+        JCheckBox chkRecordar = new JCheckBox("Recordar sesión");
+        chkRecordar.setBounds(170, 180, 150, 25);
+        panel.add(chkRecordar);
 
         JButton btn = new JButton("Ingresar");
-        btn.setBounds(160, 210, 120, 35);
-        btn.setBackground(new Color(0, 180, 0));
-        btn.setForeground(Color.WHITE);
-        btn.setBorderPainted(false);
+        btn.setBounds(160, 220, 120, 35);
         panel.add(btn);
 
         btn.addActionListener(e -> {
@@ -128,19 +175,18 @@ public class Login extends JFrame {
                 Connection con = Conexion.conectar();
 
                 String sql =
-                        "SELECT u.*, " +
-                        "a.numeroFicha, " +
-                        "a.programa, " +
-                        "c.area, " +
-                        "i.especialidad " +
-                        "FROM usuarios u " +
-                        "LEFT JOIN aprendiz a ON u.id = a.id " +
-                        "LEFT JOIN coordinador c ON u.id = c.id " +
-                        "LEFT JOIN instructor i ON u.id = i.id " +
-                        "WHERE u.identificacion = ? " +
-                        "AND u.tipoDocumento = ? " +
-                        "AND u.rol = ? " +
-                        "AND u.password = ?";
+                    "SELECT u.*, " +
+                    "a.numeroFicha, " +
+                    "c.area, " +
+                    "i.especialidad " +
+                    "FROM usuarios u " +
+                    "LEFT JOIN aprendiz a ON u.id = a.id " +
+                    "LEFT JOIN coordinador c ON u.id = c.id " +
+                    "LEFT JOIN instructor i ON u.id = i.id " +
+                    "WHERE u.identificacion = ? " +
+                    "AND u.tipoDocumento = ? " +
+                    "AND u.rol = ? " +
+                    "AND u.password = ?";
 
                 PreparedStatement ps = con.prepareStatement(sql);
 
@@ -153,39 +199,36 @@ public class Login extends JFrame {
 
                 if (rs.next()) {
 
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Bienvenido " + rs.getString("nombre")
-                    );
+                    if (chkRecordar.isSelected()) {
 
-                    // =======================
-                    // ABRIR SEGÚN EL ROL
-                    // =======================
+                        prefs.putInt("idUsuario", rs.getInt("id"));
+
+                    } else {
+
+                        prefs.remove("idUsuario");
+                    }
 
                     if (rol.equals("Aprendiz")) {
 
                         new Vista.aprendiz.PanelAprendiz(
-                                rs.getInt("id"),
-                                rs.getString("nombre"),
-                                rs.getString("numeroFicha")
+                            rs.getInt("id"),
+                            rs.getString("nombre"),
+                            rs.getString("numeroFicha")
                         ).setVisible(true);
 
                     } else if (rol.equals("Instructor")) {
 
                         new Vista.instructor.panelInstructor(
-                                rs.getString("nombre"),
-                                "N/A",
-                                rs.getString("especialidad")
+                            rs.getString("nombre"),
+                            "N/A",
+                            rs.getString("especialidad")
                         ).setVisible(true);
 
                     } else if (rol.equals("Coordinador")) {
-                        System.out.println("Nombre: " + rs.getString("nombre"));
-                        System.out.println("Area: " + rs.getString("area"));
-                        System.out.println("Rol: " + rs.getString("rol"));
-                        new Vista.coordinador.PanelCoordinador(
 
-                                rs.getString("nombre"),
-                                rs.getString("area")
+                        new Vista.coordinador.PanelCoordinador(
+                            rs.getString("nombre"),
+                            rs.getString("area")
                         ).setVisible(true);
                     }
 
@@ -194,8 +237,8 @@ public class Login extends JFrame {
                 } else {
 
                     JOptionPane.showMessageDialog(
-                            this,
-                            "Credenciales incorrectas"
+                        this,
+                        "Credenciales incorrectas"
                     );
                 }
 
@@ -208,8 +251,8 @@ public class Login extends JFrame {
                 ex.printStackTrace();
 
                 JOptionPane.showMessageDialog(
-                        this,
-                        "Error al conectar con la base de datos"
+                    this,
+                    "Error al conectar con la base de datos"
                 );
             }
         });

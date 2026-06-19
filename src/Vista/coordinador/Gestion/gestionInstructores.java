@@ -383,11 +383,9 @@ public class gestionInstructores extends JFrame {
                     "INNER JOIN instructor i ON u.id = i.id " +
                     "WHERE u.rol = 'Instructor'";
 
-            PreparedStatement ps =
-                    con.prepareStatement(sql);
+            PreparedStatement ps = con.prepareStatement(sql);
 
-            ResultSet rs =
-                    ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
 
@@ -421,6 +419,5 @@ public class gestionInstructores extends JFrame {
                     e.getMessage());
         }
     }
-
 
 }

@@ -2,6 +2,7 @@ package Vista.coordinador;
 
 import javax.swing.*;
 
+import Vista.Login;
 import Vista.coordinador.Gestion.gestionAprendices;
 import Vista.coordinador.Gestion.gestionFichas;
 import Vista.coordinador.Gestion.gestionInstructores;
@@ -9,6 +10,8 @@ import Vista.coordinador.Gestion.gestionInstructores;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+
+import java.util.prefs.Preferences;
 
 public class PanelCoordinador extends JFrame {
 
@@ -68,15 +71,16 @@ public class PanelCoordinador extends JFrame {
         program.setFont(new Font("Arial", Font.PLAIN, 30));
         panel.add(program);
 
-       // ================= BOTONES =================
+
+    //    Funciones de los botones
+
         btnFichas = new JButton("Gestión Fichas");
         styleButton(btnFichas);
         panel.add(btnFichas);
 
         // ABRIR GESTIÓN DE FICHAS
         btnFichas.addActionListener(e -> {
-
-            new gestionFichas().setVisible(true);
+            new gestionFichas(nombre,area).setVisible(true);
 
             dispose();
 
@@ -107,22 +111,18 @@ public class PanelCoordinador extends JFrame {
 
         });
 
-        btnExit = new JButton("Cerrar Sesion");
+        btnExit = new JButton("Cerrar Sesión");
         styleButton(btnExit);
         panel.add(btnExit);
-
         btnExit.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Sesión cerrada");
+
+            Preferences prefs = Preferences.userNodeForPackage(Login.class);
+            prefs.remove("idUsuario");
             dispose();
-            new Vista.Login().setVisible(true);
+            new Login().setVisible(true);
+
         });
-        // ================= RESPONSIVE ENGINE =================
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                resizeComponents();
-            }
-        });
+
 
         resizeComponents();
     }
@@ -143,16 +143,20 @@ public class PanelCoordinador extends JFrame {
         nombreCoordinador.setBounds(w / 2 - 150, h / 2 - 100, 600, 40);
         program.setBounds(w / 2 - 150, h / 2 - 40, 600, 40);
 
-        // BOTONES (alineados abajo responsive)
-        int btnY = h - 180;
-        int spacing = w / 4;
-
-        btnFichas.setBounds(spacing - 120, btnY, 240, 70);
-        btnInstr.setBounds(2 * spacing - 120, btnY, 240, 70);
-        btnAprendices.setBounds(3 * spacing - 120, btnY, 240, 70);
-
         // EXIT (arriba derecha responsive)
         btnExit.setBounds(w - 260, 120, 240, 70);
+
+        if (btnFichas != null)
+        btnFichas.setBounds(w / 4 - 120, h - 180, 240, 70);
+
+        if (btnInstr != null)
+            btnInstr.setBounds(w / 2 - 120, h - 180, 240, 70);
+
+        if (btnAprendices != null)
+            btnAprendices.setBounds((w * 3 / 4) - 120, h - 180, 240, 70);
+
+        if (btnExit != null)
+            btnExit.setBounds(w - 260, 120, 240, 70);
     }
 
     // ================= BUTTON STYLE =================

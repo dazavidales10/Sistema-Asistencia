@@ -1,11 +1,14 @@
 package Vista.instructor;
 
 import javax.swing.*;
+
+import Vista.instructor.GestionInstructor.registrarAsistencia;
+
 import java.awt.*;
 
 public class panelInstructor extends JFrame {
 
-    public panelInstructor(String nombre, String ficha, String especialidad) {
+    public panelInstructor(String nombreInstructor, String especialidadInstructor, String ficha) {
 
         setTitle("Panel Instructor");
         setSize(1200, 700);
@@ -52,13 +55,13 @@ public class panelInstructor extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        centerPanel.add(new JLabel("Bienvenido: " + nombre), gbc);
+        centerPanel.add(new JLabel("Bienvenido: " + nombreInstructor), gbc);
 
         gbc.gridy++;
         centerPanel.add(new JLabel("Ficha: " + ficha), gbc);
 
         gbc.gridy++;
-        centerPanel.add(new JLabel("Especialidad: " + especialidad), gbc);
+        centerPanel.add(new JLabel("Especialidad: " + especialidadInstructor), gbc);
 
         add(centerPanel, BorderLayout.CENTER);
 
@@ -70,6 +73,17 @@ public class panelInstructor extends JFrame {
         JButton btnExcusa = new JButton("Gestionar Excusas");
         JButton btnVerAprendices = new JButton("Ver Aprendices");
         JButton btnReportes = new JButton("Generar Reportes");
+
+
+        btnRegistrar.addActionListener(e ->{
+            new registrarAsistencia(
+                    nombreInstructor,
+                    especialidadInstructor,
+                    ficha
+            ).setVisible(true);
+
+            dispose();
+        });
 
         JButton[] botones = {
                 btnRegistrar,
