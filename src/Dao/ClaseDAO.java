@@ -1,4 +1,4 @@
-package DAO;
+package Dao;
 
 import Conexion.Conexion;
 import Modelo.Clase;
@@ -12,7 +12,7 @@ public class ClaseDAO {
 
     public ClaseDAO(){
 
-        con = Conexion.getConexion();
+        con = Conexion.conectar();
 
     }
 
