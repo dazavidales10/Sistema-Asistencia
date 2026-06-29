@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 
 import javax.swing.*;
 
-import Modelo.Conexion;
+import Conexion.Conexion;
 
 public class dialogFicha extends JDialog {
 

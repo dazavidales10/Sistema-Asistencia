@@ -2,13 +2,23 @@ package Vista.instructor;
 
 import javax.swing.*;
 
-import Vista.instructor.GestionInstructor.registrarAsistencia;
+import Vista.instructor.GestionInstructor.seleccionarFicha;
 
 import java.awt.*;
 
 public class panelInstructor extends JFrame {
+    
+    private int idInstructor;
+    
 
-    public panelInstructor(String nombreInstructor, String especialidadInstructor, String ficha) {
+    public  panelInstructor(
+            int idInstructor,
+            String nombre,
+            String especialidad
+        ) {
+        
+        
+        this.idInstructor = idInstructor;
 
         setTitle("Panel Instructor");
         setSize(1200, 700);
@@ -45,7 +55,8 @@ public class panelInstructor extends JFrame {
 
         add(contenedorSuperior, BorderLayout.NORTH);
 
-        // ================= PANEL CENTRAL =================
+        // panel central
+
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(Color.WHITE);
 
@@ -55,13 +66,11 @@ public class panelInstructor extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        centerPanel.add(new JLabel("Bienvenido: " + nombreInstructor), gbc);
+        centerPanel.add(new JLabel("Bienvenido: " + nombre), gbc);
+
 
         gbc.gridy++;
-        centerPanel.add(new JLabel("Ficha: " + ficha), gbc);
-
-        gbc.gridy++;
-        centerPanel.add(new JLabel("Especialidad: " + especialidadInstructor), gbc);
+        centerPanel.add(new JLabel("Especialidad: " + especialidad), gbc);
 
         add(centerPanel, BorderLayout.CENTER);
 
@@ -74,12 +83,14 @@ public class panelInstructor extends JFrame {
         JButton btnVerAprendices = new JButton("Ver Aprendices");
         JButton btnReportes = new JButton("Generar Reportes");
 
+        // Eventos de los Botones
 
-        btnRegistrar.addActionListener(e ->{
-            new registrarAsistencia(
-                    nombreInstructor,
-                    especialidadInstructor,
-                    ficha
+        btnRegistrar.addActionListener(e -> {
+
+            new seleccionarFicha(
+                    idInstructor,
+                    nombre,
+                    especialidad
             ).setVisible(true);
 
             dispose();
@@ -119,18 +130,14 @@ public class panelInstructor extends JFrame {
 
     }
 
-    public panelInstructor() {
-        this("Prueba", "0000", "Prueba");
-    }
-
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> {
 
             new panelInstructor(
-                    "Pedro Gomez",
-                    "3364343",
-                    "Análisis y Desarrollo de Software"
+                2,
+                "María Gómez",
+                "Análisis y Desarrollo de Software"
             ).setVisible(true);
 
         });

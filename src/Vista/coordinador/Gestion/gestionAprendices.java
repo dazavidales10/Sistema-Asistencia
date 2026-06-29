@@ -2,7 +2,6 @@ package Vista.coordinador.Gestion;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,9 +11,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import Modelo.Conexion;
-import Vista.coordinador.PanelCoordinador;
+import Conexion.Conexion;
 import Vista.coordinador.Dialogs.dialogAprendiz;
+import Vista.coordinador.PanelCoordinador;
 
 public class gestionAprendices extends JFrame {
 
@@ -34,77 +33,85 @@ public class gestionAprendices extends JFrame {
         this.areaCoordinador = areaCoordinador;
 
         setTitle("Gestión Aprendices");
-        setSize(1920, 1080);
+        setSize(1920,1080);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(null);
+        JPanel panel = new JPanel(null);
         panel.setBackground(Color.WHITE);
-
         setContentPane(panel);
 
+        //================ HEADER =================
+
         JLabel arrow = new JLabel("←");
-        arrow.setBounds(30, 5, 50, 50);
-        arrow.setFont(new Font("Arial", Font.BOLD, 40));
+        arrow.setBounds(30,5,50,50);
+        arrow.setFont(new Font("Arial",Font.BOLD,40));
         arrow.setForeground(Color.WHITE);
         arrow.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        panel.add(arrow);
 
-        arrow.addMouseListener(new java.awt.event.MouseAdapter() {
+        arrow.addMouseListener(new java.awt.event.MouseAdapter(){
 
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
+            public void mouseClicked(java.awt.event.MouseEvent e){
 
                 new PanelCoordinador(
                         nombreCoordinador,
-                        areaCoordinador)
-                        .setVisible(true);
+                        areaCoordinador
+                ).setVisible(true);
 
                 dispose();
+
             }
+
         });
 
+        panel.add(arrow);
+
         JLabel titulo = new JLabel("Gestión Aprendices");
-        titulo.setBounds(100, 0, 500, 70);
-        titulo.setFont(new Font("Arial", Font.BOLD, 20));
+        titulo.setBounds(100,0,500,70);
         titulo.setForeground(Color.WHITE);
+        titulo.setFont(new Font("Arial",Font.BOLD,22));
+
         panel.add(titulo);
 
         JLabel header = new JLabel();
         header.setOpaque(true);
-        header.setBackground(new Color(0, 180, 0));
-        header.setBounds(0, 0, 1920, 70);
+        header.setBackground(new Color(0,180,0));
+        header.setBounds(0,0,1920,70);
+
         panel.add(header);
 
-        JLabel lblBuscar = new JLabel("Número Ficha");
-        lblBuscar.setBounds(420, 150, 180, 30);
-        lblBuscar.setFont(new Font("Arial", Font.BOLD, 20));
+        //================ BUSCADOR =================
+
+        JLabel lblBuscar = new JLabel("Número de ficha");
+
+        lblBuscar.setBounds(420,150,180,35);
+        lblBuscar.setFont(new Font("Arial",Font.BOLD,20));
+
         panel.add(lblBuscar);
 
         txtNumeroFicha = new JTextField();
-        txtNumeroFicha.setBounds(620, 150, 500, 40);
+
+        txtNumeroFicha.setBounds(620,150,500,40);
+
         panel.add(txtNumeroFicha);
 
         JButton btnBuscar = new JButton("Buscar");
-        btnBuscar.setBounds(1160, 150, 180, 40);
+        btnBuscar.setBounds(1160,150,180,40);
+
         panel.add(btnBuscar);
 
+        //================ BOTONES =================
+
         JButton btnAgregar = new JButton("Agregar");
-        btnAgregar.setBounds(260, 260, 240, 70);
-        panel.add(btnAgregar);
-
         JButton btnEditar = new JButton("Editar");
-        btnEditar.setBounds(660, 260, 240, 70);
-        panel.add(btnEditar);
-
         JButton btnEliminar = new JButton("Eliminar");
-        btnEliminar.setBounds(1060, 260, 240, 70);
-        panel.add(btnEliminar);
-
         JButton btnExportar = new JButton("Exportar");
-        btnExportar.setBounds(1460, 260, 240, 70);
-        panel.add(btnExportar);
+
+        btnAgregar.setBounds(260,260,240,70);
+        btnEditar.setBounds(660,260,240,70);
+        btnEliminar.setBounds(1060,260,240,70);
+        btnExportar.setBounds(1460,260,240,70);
 
         JButton[] botones = {
                 btnBuscar,
@@ -114,40 +121,55 @@ public class gestionAprendices extends JFrame {
                 btnExportar
         };
 
-        for (JButton boton : botones) {
+        for(JButton b : botones){
 
-            boton.setBackground(new Color(0, 180, 0));
-            boton.setForeground(Color.WHITE);
-            boton.setFont(new Font("Arial", Font.BOLD, 20));
-            boton.setBorderPainted(false);
+            b.setBackground(new Color(0,180,0));
+            b.setForeground(Color.WHITE);
+            b.setFont(new Font("Arial",Font.BOLD,20));
+            b.setBorderPainted(false);
+
+            panel.add(b);
+
         }
 
+        //================ TABLA =================
+
         String[] columnas = {
-            "Documento",
-            "Nombre",
-            "Programa",
-            "Teléfono",
-            "Número Ficha",
-            "Seleccionar"
+
+                "Documento",
+                "Nombre",
+                "Programa",
+                "Teléfono",
+                "Número Ficha",
+                "Seleccionar"
+
         };
 
-        modeloTabla = new DefaultTableModel(columnas, 0) {
+        modeloTabla = new DefaultTableModel(columnas,0){
 
             @Override
-            public Class<?> getColumnClass(int column) {
-                return column == 5 ? Boolean.class : String.class;
+            public Class<?> getColumnClass(int column){
+
+                if(column==5)
+                    return Boolean.class;
+
+                return String.class;
+
             }
 
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return column == 5;
+            public boolean isCellEditable(int row,int column){
+
+                return column==5;
+
             }
+
         };
 
         tablaAprendices = new JTable(modeloTabla);
 
-        tablaAprendices.setRowHeight(50);
-        tablaAprendices.setFont(new Font("Arial", Font.PLAIN, 18));
+        tablaAprendices.setRowHeight(45);
+        tablaAprendices.setFont(new Font("Arial",Font.PLAIN,18));
 
         DefaultTableCellRenderer centro =
                 new DefaultTableCellRenderer();
@@ -155,23 +177,25 @@ public class gestionAprendices extends JFrame {
         centro.setHorizontalAlignment(
                 SwingConstants.CENTER);
 
-        for (int i = 0; i < 5; i++) {
+        for(int i=0;i<5;i++){
 
             tablaAprendices.getColumnModel()
                     .getColumn(i)
                     .setCellRenderer(centro);
+
         }
 
         JScrollPane scroll =
                 new JScrollPane(tablaAprendices);
 
-        scroll.setBounds(35, 350, 1840, 600);
+        scroll.setBounds(35,350,1840,600);
 
         panel.add(scroll);
 
+        //================ EVENTOS =================
+
         cargarAprendices();
 
-        // AGREGAR
         btnAgregar.addActionListener(e -> {
 
             dialogAprendiz dialog =
@@ -180,40 +204,37 @@ public class gestionAprendices extends JFrame {
             dialog.setVisible(true);
 
             cargarAprendices();
+
         });
 
-        // EDITAR
         btnEditar.addActionListener(e -> editarAprendiz());
 
-        // ELIMINAR
         btnEliminar.addActionListener(e -> eliminarAprendiz());
 
-        // BUSCAR
         btnBuscar.addActionListener(e -> buscarPorFicha());
+
     }
 
-    private void cargarAprendices() {
+        private void cargarAprendices() {
 
         modeloTabla.setRowCount(0);
 
-        try {
+        String sql = """
+                SELECT
+                    a.documento,
+                    u.nombre,
+                    a.programa,
+                    a.telefono,
+                    a.numeroFicha
+                FROM aprendiz a
+                INNER JOIN usuarios u
+                    ON a.documento = u.identificacion
+                ORDER BY u.nombre
+                """;
 
-            Connection con = Conexion.conectar();
-
-            String sql =
-                    "SELECT " +
-                    "a.documento, " +
-                    "u.nombre, " +
-                    "a.programa, " +
-                    "a.telefono, " +
-                    "a.numeroFicha " +
-                    "FROM aprendiz a " +
-                    "INNER JOIN usuarios u ON a.id = u.id";
-
-            PreparedStatement ps =
-                    con.prepareStatement(sql);
-
-            ResultSet rs = ps.executeQuery();
+        try (Connection con = Conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
 
@@ -225,12 +246,10 @@ public class gestionAprendices extends JFrame {
                         rs.getString("telefono"),
                         rs.getString("numeroFicha"),
                         false
-                });
-            }
 
-            rs.close();
-            ps.close();
-            con.close();
+                });
+
+            }
 
         } catch (Exception ex) {
 
@@ -238,33 +257,36 @@ public class gestionAprendices extends JFrame {
 
             JOptionPane.showMessageDialog(
                     this,
-                    ex.getMessage());
+                    ex.getMessage()
+            );
+
         }
+
     }
 
     private void buscarPorFicha() {
 
         modeloTabla.setRowCount(0);
 
-        try {
+        String sql = """
+                SELECT
+                    a.documento,
+                    u.nombre,
+                    a.programa,
+                    a.telefono,
+                    a.numeroFicha
+                FROM aprendiz a
+                INNER JOIN usuarios u
+                    ON a.documento = u.identificacion
+                WHERE
+                    a.numeroFicha LIKE ?
+                    OR a.documento LIKE ?
+                    OR u.nombre LIKE ?
+                ORDER BY u.nombre
+                """;
 
-            Connection con = Conexion.conectar();
-
-            String sql =
-                    "SELECT " +
-                    "a.documento, " +
-                    "u.nombre, " +
-                    "a.programa, " +
-                    "a.telefono, " +
-                    "a.numeroFicha " +
-                    "FROM aprendiz a " +
-                    "INNER JOIN usuarios u ON a.id = u.id " +
-                    "WHERE a.numeroFicha LIKE ? " +
-                    "OR a.documento LIKE ? " +
-                    "OR u.nombre LIKE ?";
-
-            PreparedStatement ps =
-                    con.prepareStatement(sql);
+        try (Connection con = Conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             String busqueda =
                     "%" + txtNumeroFicha.getText().trim() + "%";
@@ -285,20 +307,26 @@ public class gestionAprendices extends JFrame {
                         rs.getString("telefono"),
                         rs.getString("numeroFicha"),
                         false
+
                 });
+
             }
 
             rs.close();
-            ps.close();
-            con.close();
 
         } catch (Exception ex) {
 
             ex.printStackTrace();
-        }
-    }
 
-    private void editarAprendiz() {
+            JOptionPane.showMessageDialog(
+                    this,
+                    ex.getMessage()
+            );
+
+        }
+
+    }
+        private void editarAprendiz() {
 
         int fila = obtenerFilaSeleccionada();
 
@@ -317,14 +345,14 @@ public class gestionAprendices extends JFrame {
         String telefono = modeloTabla.getValueAt(fila, 3).toString();
         String ficha = modeloTabla.getValueAt(fila, 4).toString();
 
-        dialogAprendiz dialog =
-                new dialogAprendiz(
-                        this,
-                        documento,
-                        nombre,
-                        programa,
-                        telefono,
-                        ficha);
+        dialogAprendiz dialog = new dialogAprendiz(
+                this,
+                documento,
+                nombre,
+                programa,
+                telefono,
+                ficha
+        );
 
         dialog.setVisible(true);
 
@@ -345,9 +373,7 @@ public class gestionAprendices extends JFrame {
         }
 
         String documento =
-                modeloTabla.getValueAt(
-                        fila,
-                        0).toString();
+                modeloTabla.getValueAt(fila, 0).toString();
 
         int respuesta = JOptionPane.showConfirmDialog(
                 this,
@@ -359,60 +385,74 @@ public class gestionAprendices extends JFrame {
             return;
         }
 
-        try {
+        try (Connection con = Conexion.conectar()) {
 
-            Connection con = Conexion.conectar();
+            // Eliminar registros relacionados
+            String sqlClaseAprendiz = """
+                    DELETE ca
+                    FROM clase_aprendiz ca
+                    INNER JOIN aprendiz a
+                        ON ca.idAprendiz = a.idAprendiz
+                    WHERE a.documento = ?
+                    """;
 
-            // Buscar el id del usuario asociado
-            String sqlBuscar =
-                    "SELECT id FROM usuarios " +
-                    "WHERE identificacion = ?";
+            PreparedStatement ps1 =
+                    con.prepareStatement(sqlClaseAprendiz);
 
-            PreparedStatement psBuscar =
-                    con.prepareStatement(sqlBuscar);
+            ps1.setString(1, documento);
+            ps1.executeUpdate();
+            ps1.close();
 
-            psBuscar.setString(1, documento);
+            String sqlAsistencia = """
+                    DELETE asi
+                    FROM asistencia asi
+                    INNER JOIN aprendiz a
+                        ON asi.idAprendiz = a.idAprendiz
+                    WHERE a.documento = ?
+                    """;
 
-            ResultSet rs = psBuscar.executeQuery();
+            PreparedStatement ps2 =
+                    con.prepareStatement(sqlAsistencia);
 
-            if (rs.next()) {
+            ps2.setString(1, documento);
+            ps2.executeUpdate();
+            ps2.close();
 
-                int idUsuario = rs.getInt("id");
+            String sqlAprendiz = """
+                    DELETE FROM aprendiz
+                    WHERE documento = ?
+                    """;
 
-                // Eliminar aprendiz
-                PreparedStatement psAprendiz =
-                        con.prepareStatement(
-                                "DELETE FROM aprendiz WHERE id = ?");
+            PreparedStatement ps3 =
+                    con.prepareStatement(sqlAprendiz);
 
-                psAprendiz.setInt(1, idUsuario);
+            ps3.setString(1, documento);
+            ps3.executeUpdate();
+            ps3.close();
 
-                psAprendiz.executeUpdate();
+            String sqlUsuario = """
+                    DELETE FROM usuarios
+                    WHERE identificacion = ?
+                    """;
 
-                // Eliminar usuario
-                PreparedStatement psUsuario =
-                        con.prepareStatement(
-                                "DELETE FROM usuarios WHERE id = ?");
+            PreparedStatement ps4 =
+                    con.prepareStatement(sqlUsuario);
 
-                psUsuario.setInt(1, idUsuario);
+            ps4.setString(1, documento);
 
-                int filas = psUsuario.executeUpdate();
+            int filas = ps4.executeUpdate();
 
-                if (filas > 0) {
+            ps4.close();
 
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Aprendiz eliminado correctamente");
+            if (filas > 0) {
 
-                    cargarAprendices();
-                }
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Aprendiz eliminado correctamente."
+                );
 
-                psAprendiz.close();
-                psUsuario.close();
+                cargarAprendices();
             }
-
-            rs.close();
-            psBuscar.close();
-            con.close();
 
         } catch (Exception ex) {
 
@@ -420,7 +460,8 @@ public class gestionAprendices extends JFrame {
 
             JOptionPane.showMessageDialog(
                     this,
-                    ex.getMessage());
+                    ex.getMessage()
+            );
         }
     }
 
@@ -438,4 +479,5 @@ public class gestionAprendices extends JFrame {
 
         return -1;
     }
+
 }

@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 
 import javax.swing.*;
 
-import Modelo.Conexion;
+import Conexion.Conexion;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -17,7 +17,6 @@ import java.util.prefs.Preferences;
 
 public class Login extends JFrame {
 
-    private boolean mostrar = false;
     private JPasswordField txtPass;
     private JTextField txtId;
     private JComboBox<String> cbTipo;
@@ -42,7 +41,7 @@ public class Login extends JFrame {
                     "c.area, " +
                     "i.especialidad " +
                     "FROM usuarios u " +
-                    "LEFT JOIN aprendiz a ON u.id = a.id " +
+                    "LEFT JOIN aprendiz a ON u.id = a.idInstructor " +
                     "LEFT JOIN coordinador c ON u.id = c.id " +
                     "LEFT JOIN instructor i ON u.id = i.id " +
                     "WHERE u.id = ?";
@@ -67,8 +66,8 @@ public class Login extends JFrame {
                     } else if (rol.equals("Instructor")) {
 
                         new Vista.instructor.panelInstructor(
+                            rs.getInt("id"),
                             rs.getString("nombre"),
-                            "N/A",
                             rs.getString("especialidad")
                         ).setVisible(true);
 
@@ -180,7 +179,7 @@ public class Login extends JFrame {
                     "c.area, " +
                     "i.especialidad " +
                     "FROM usuarios u " +
-                    "LEFT JOIN aprendiz a ON u.id = a.id " +
+                    "LEFT JOIN aprendiz a ON u.id = a.idInstructor " +
                     "LEFT JOIN coordinador c ON u.id = c.id " +
                     "LEFT JOIN instructor i ON u.id = i.id " +
                     "WHERE u.identificacion = ? " +
@@ -219,8 +218,8 @@ public class Login extends JFrame {
                     } else if (rol.equals("Instructor")) {
 
                         new Vista.instructor.panelInstructor(
+                            rs.getInt("id"),
                             rs.getString("nombre"),
-                            "N/A",
                             rs.getString("especialidad")
                         ).setVisible(true);
 

@@ -9,13 +9,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import Conexion.Conexion;
+
 import java.awt.*;
 
-// import java.awt.event.MouseAdapter;
-// import java.awt.event.MouseEvent;
-// import org.w3c.dom.events.MouseEvent;
-
-import Modelo.Conexion;
 import Vista.coordinador.PanelCoordinador;
 import Vista.coordinador.Dialogs.dialogInstructor;
 
