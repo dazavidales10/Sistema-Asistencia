@@ -1,8 +1,8 @@
-package Vista.instructor.GestionInstructor;
+package Vista.instructor.GestionInstructor.VerAprendices;
 
 import Conexion.Conexion;
 import Vista.instructor.panelInstructor;
-import Vista.instructor.GestionInstructor.PanelClases;
+import Vista.instructor.GestionInstructor.RegistrarAsitencia.PanelClases;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -14,7 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class seleccionarFicha extends JFrame {
+public class seleccionarFichaVer extends JFrame {
 
         private JTable tablaFichas;
         private DefaultTableModel modelo;
@@ -34,7 +34,7 @@ public class seleccionarFicha extends JFrame {
         private String fichaSeleccionada = "";
         private String programaSeleccionado = "";
 
-        public seleccionarFicha(
+        public seleccionarFichaVer(
                 int idInstructor,
                 String nombre,
                 String especialidad) {
@@ -45,7 +45,7 @@ public class seleccionarFicha extends JFrame {
         this.nombre = nombre;
         this.especialidad = especialidad;
 
-        setTitle("Mis Fichas");
+        setTitle("Mis Fichas Ver");
         setSize(1200,700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -232,7 +232,7 @@ public class seleccionarFicha extends JFrame {
 
         btnIngresar.addActionListener(e -> {
 
-                new PanelClases(
+                new PanelClasesVer(
                         idInstructor,
                         nombre,
                         especialidad,

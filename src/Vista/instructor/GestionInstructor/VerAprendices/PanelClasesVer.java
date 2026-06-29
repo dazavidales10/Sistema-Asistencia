@@ -1,8 +1,10 @@
 
-package Vista.instructor.GestionInstructor;
+package Vista.instructor.GestionInstructor.VerAprendices;
 
 import Conexion.Conexion;
 import Vista.instructor.DialogsInstructor.dialogClase;
+import Vista.instructor.GestionInstructor.RegistrarAsitencia.PanelAprendices;
+import Vista.instructor.GestionInstructor.RegistrarAsitencia.seleccionarFicha;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -13,7 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class PanelClases extends JFrame {
+public class PanelClasesVer extends JFrame {
 
     private JTable tabla;
     private DefaultTableModel modelo;
@@ -34,7 +36,7 @@ public class PanelClases extends JFrame {
 
     private int idClaseSeleccionada = -1;
 
-    public PanelClases(
+    public PanelClasesVer(
             int idInstructor,
             String nombreInstructor,
             String especialidad,
@@ -47,7 +49,7 @@ public class PanelClases extends JFrame {
         this.ficha=ficha;
         
 
-        setTitle("Clases");
+        setTitle("Clases Ver");
         setSize(1200,700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -83,7 +85,7 @@ public class PanelClases extends JFrame {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e){
 
-                new seleccionarFicha(
+                new seleccionarFichaVer(
                         idInstructor,
                         nombreInstructor,
                         especialidad
@@ -190,9 +192,17 @@ public class PanelClases extends JFrame {
         btnIngresar.setForeground(Color.WHITE);
 
         derecha.add(btnIngresar);
-
+        
         add(derecha,BorderLayout.EAST);
-         //================ EVENTOS ====================
+    
+        JButton btnVer = new JButton("Ver Aprendices");
+        btnVer.setBackground(new Color(0,180,0));
+        btnVer.setForeground(Color.WHITE);
+        btnVer.setFont(new Font("Arial",Font.BOLD,18));
+        btnVer.setBorderPainted(false);
+
+
+        // Eventos de los Botones
 
         btnBuscar.addActionListener(e -> buscar());
 
@@ -229,6 +239,20 @@ public class PanelClases extends JFrame {
 
             });
 
+            btnVer.addActionListener(e -> {
+
+                new PanelVerAprendices(
+                        idInstructor,
+                        nombreInstructor,
+                        especialidad,
+                        ficha,
+                        idClaseSeleccionada
+                ).setVisible(true);
+
+                dispose();
+
+            });
+
             btnNuevaClase.addActionListener(e -> {
 
                 new dialogClase(
@@ -243,15 +267,28 @@ public class PanelClases extends JFrame {
 
             btnIngresar.addActionListener(e -> {
 
-                System.out.println("Enviando ficha: " + ficha);
-                System.out.println("Enviando idClase: " + idClaseSeleccionada);
-                
-                new PanelAprendices(
+                int fila = tabla.getSelectedRow();
+
+                if (fila == -1) {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Seleccione una clase."
+                    );
+
+                    return;
+                }
+
+                int idClase = Integer.parseInt(
+                        modelo.getValueAt(fila,0).toString()
+                );
+
+                new PanelVerAprendices(
                         idInstructor,
                         nombreInstructor,
                         especialidad,
                         ficha,
-                        idClaseSeleccionada
+                        idClase
                 ).setVisible(true);
 
                 dispose();

@@ -1,7 +1,6 @@
-package Vista.instructor.GestionInstructor;
+package Vista.instructor.GestionInstructor.RegistrarAsitencia;
 
 import Conexion.Conexion;
-import Vista.coordinador.PanelCoordinador;
 import Vista.instructor.DialogsInstructor.dialogAsistencia;
 
 import javax.swing.*;
@@ -27,7 +26,6 @@ public class PanelAprendices extends JFrame {
 
         private JButton btnAsistencia;
         private JButton btnEditar;
-        private JButton btnEliminar;
 
         private int idInstructor;
         private String nombreInstructor;
@@ -203,7 +201,6 @@ public class PanelAprendices extends JFrame {
 
         btnAsistencia = new JButton("Registrar Asistencia");
         btnEditar = new JButton("Editar");
-        btnEliminar = new JButton("Eliminar");
 
 
         Color verde = new Color(0, 153, 51);
@@ -211,8 +208,7 @@ public class PanelAprendices extends JFrame {
         JButton[] botones = {
         btnBuscar,
         btnAsistencia,
-        btnEditar,
-        btnEliminar
+        btnEditar
         };
 
         for (JButton boton : botones) {
@@ -228,13 +224,11 @@ public class PanelAprendices extends JFrame {
 
         btnAsistencia.setEnabled(false);
         btnEditar.setEnabled(false);
-        btnEliminar.setEnabled(false);
 
         derecha.add(btnAsistencia);
         derecha.add(Box.createVerticalStrut(15));
         derecha.add(btnEditar);
         derecha.add(Box.createVerticalStrut(15));
-        derecha.add(btnEliminar);
         add(derecha,BorderLayout.EAST);
 
         //================ EVENTOS =================
@@ -262,7 +256,6 @@ public class PanelAprendices extends JFrame {
 
         btnAsistencia.setEnabled(true);
         btnEditar.setEnabled(true);
-        btnEliminar.setEnabled(true);
 
         });
 
@@ -287,24 +280,9 @@ public class PanelAprendices extends JFrame {
 
         });
 
-        btnEditar.addActionListener(e -> editarAsistencia());
+                btnEditar.addActionListener(e -> editarAsistencia());
 
-        btnEliminar.addActionListener(e -> {
-
-                int opcion = JOptionPane.showConfirmDialog(
-                        this,
-                        "¿Desea eliminar este aprendiz de la ficha?",
-                        "Confirmar",
-                        JOptionPane.YES_NO_OPTION
-                        );
-
-                        if (opcion == JOptionPane.YES_OPTION) {
-
-                                eliminarAprendiz();
-
-                        }
-
-                });
+                
         }
 
         // METODOS DE LA CLASE
@@ -449,40 +427,6 @@ public class PanelAprendices extends JFrame {
 
                 btnAsistencia.setEnabled(false);
                 btnEditar.setEnabled(false);
-                btnEliminar.setEnabled(false);
-
-        }
-        private void eliminarAprendiz() {
-
-                String sql = """
-                        DELETE FROM aprendiz
-                        WHERE documento=?
-                        AND numeroFicha=?
-                        """;
-
-                try (Connection cn = Conexion.conectar();
-                        PreparedStatement ps = cn.prepareStatement(sql)) {
-
-                        ps.setString(1, documentoSeleccionado);
-                        ps.setString(2, ficha);
-
-                        ps.executeUpdate();
-
-                        JOptionPane.showMessageDialog(
-                                this,
-                                "Aprendiz eliminado correctamente."
-                        );
-
-                        cargarAprendices();
-
-                } catch (Exception ex) {
-
-                        JOptionPane.showMessageDialog(
-                                this,
-                                ex.getMessage()
-                        );
-
-                }
 
         }
 

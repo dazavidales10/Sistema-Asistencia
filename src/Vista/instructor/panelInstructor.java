@@ -2,7 +2,7 @@ package Vista.instructor;
 
 import javax.swing.*;
 
-import Vista.instructor.GestionInstructor.seleccionarFicha;
+import Vista.instructor.GestionInstructor.RegistrarAsitencia.seleccionarFicha;
 
 import java.awt.*;
 
