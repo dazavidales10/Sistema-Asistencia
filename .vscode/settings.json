@@ -3,7 +3,11 @@
         "src"
     ],
     "java.project.referencedLibraries": [
-         "c:\\Users\\dazav\\Desktop\\sistema asistencia\\lib\\*.jar",
-        "c:\\Users\\dazav\\Desktop\\sistema asistencia\\lib\\mysql-connector-j-9.7.0.jar"
+        "lib\\mysql-connector-j-9.7.0.jar",
+        "lib\\jcalendar-1.4.jar",
+        "lib\\itextpdf-5.5.13.3.jar",
+        "c:\\Users\\dazav\\Desktop\\sistema asistencia\\lib\\itextpdf-5.5.13.3.jar",
+        "c:\\Users\\dazav\\Desktop\\sistema asistencia\\lib\\mysql-connector-j-9.7.0.jar",
+        "c:\\Users\\dazav\\Desktop\\sistema asistencia\\lib\\jcalendar-1.4.jar"
     ]
 }

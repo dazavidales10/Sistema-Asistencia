@@ -1,7 +1,9 @@
 package Vista.aprendiz;
 
-import Modelo.Conexion;
 import javax.swing.*;
+
+import Conexion.Conexion;
+
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

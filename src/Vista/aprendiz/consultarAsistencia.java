@@ -1,7 +1,5 @@
 package Vista.aprendiz;
 
-import Modelo.Conexion;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -15,6 +13,8 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+
+import Conexion.Conexion;
 
 public class consultarAsistencia extends JFrame {
 

@@ -8,9 +8,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import Conexion.Conexion;
+
 import java.awt.*;
 
-import Modelo.Conexion;
 import Vista.coordinador.PanelCoordinador;
 
 public class gestionFichas extends JFrame {

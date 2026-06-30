@@ -1,6 +1,6 @@
 package Vista.aprendiz;
 
-import Modelo.Conexion;
+import Conexion.Conexion;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -280,39 +280,45 @@ private void guardarExcusa() {
                 StandardCopyOption.REPLACE_EXISTING
         );
 
-        Connection con = Conexion.conectar();
+            Connection con = Conexion.conectar();
 
-        String sql = """
-            INSERT INTO excusa
-            (
-            idAprendiz,
-            idInstructor,
-            motivo,
-            archivo
-            )
-            VALUES
-            (
-            ?,
-            ?,
-            ?,
-            ?
-            )
-            """;
+            String sql = """
+                INSERT INTO excusa
+                (
+                    fechaEnvio,
+                    motivo,
+                    estado,
+                    archivo,
+                    idAprendiz,
+                    idInstructor
+                )
+                VALUES
+                (
+                    CURDATE(),
+                    ?,
+                    'Pendiente',
+                    ?,
+                    ?,
+                    ?
+                )
+                """;
 
-        PreparedStatement ps = con.prepareStatement(sql);
+            PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.setInt(1, idAprendiz);
+            ps.setString(1, txtMotivo.getText());
 
-            ps.setInt(2, idInstructor);
+            ps.setString(2, destino.getAbsolutePath());
 
-            ps.setString(3, txtMotivo.getText());
+            ps.setInt(3, idAprendiz);
 
-            ps.setString(4, destino.getAbsolutePath());
+            ps.setInt(4, idInstructor);
 
             ps.executeUpdate();
-        ps.close();
 
-        con.close();
+            ps.close();
+
+            con.close();
+                    
 
         JOptionPane.showMessageDialog(
                 this,

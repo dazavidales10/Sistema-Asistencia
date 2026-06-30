@@ -1,139 +1,142 @@
 package Vista.instructor;
 
 import javax.swing.*;
-
-import Vista.instructor.GestionInstructor.registrarAsistencia;
-
 import java.awt.*;
+
+import Vista.instructor.GestionInstructor.RegistrarAsitencia.seleccionarFicha;
 
 public class panelInstructor extends JFrame {
 
-    public panelInstructor(String nombreInstructor, String especialidadInstructor, String ficha) {
+    private int idInstructor;
+    private String numeroFicha;
+
+    public panelInstructor(
+            int idInstructor,
+            String nombre,
+            String especialidad,
+            String numeroFicha
+    ) {
+
+        this.idInstructor = idInstructor;
+        this.numeroFicha = numeroFicha;
 
         System.out.println("==================================");
-    System.out.println("Nombre: " + nombreInstructor);
-    System.out.println("Especialidad: " + especialidadInstructor);
-    System.out.println("Ficha: " + ficha);
-    System.out.println("==================================");
+        System.out.println("ID Instructor: " + idInstructor);
+        System.out.println("Nombre: " + nombre);
+        System.out.println("Especialidad: " + especialidad);
+        System.out.println("Ficha: " + numeroFicha);
+        System.out.println("==================================");
 
         setTitle("Panel Instructor");
-        setSize(1200, 700);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(1200,700);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // ================= PANEL SUPERIOR =================
-        JPanel contenedorSuperior = new JPanel(new BorderLayout());
-        contenedorSuperior.setBackground(Color.WHITE);
+        //================ ENCABEZADO ================
 
-        // Barra verde
+        JPanel contenedorSuperior = new JPanel(new BorderLayout());
+
         JLabel header = new JLabel("Panel Instructor", SwingConstants.CENTER);
         header.setOpaque(true);
-        header.setBackground(new Color(0, 180, 0));
+        header.setBackground(new Color(0,180,0));
         header.setForeground(Color.WHITE);
-        header.setFont(new Font("Arial", Font.BOLD, 22));
-        header.setPreferredSize(new Dimension(0, 70));
+        header.setFont(new Font("Arial",Font.BOLD,22));
+        header.setPreferredSize(new Dimension(0,70));
 
-        // Panel botón cerrar (debajo de la barra)
-        JPanel panelCerrar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
-        panelCerrar.setBackground(Color.WHITE);
+        JPanel panelCerrar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton btnCerrar = new JButton("Cerrar Sesión");
-        btnCerrar.setPreferredSize(new Dimension(180, 50));
-        btnCerrar.setBackground(new Color(0, 180, 0));
+        btnCerrar.setBackground(new Color(0,180,0));
         btnCerrar.setForeground(Color.WHITE);
-        btnCerrar.setFocusPainted(false);
 
         panelCerrar.add(btnCerrar);
 
-        contenedorSuperior.add(header, BorderLayout.NORTH);
-        contenedorSuperior.add(panelCerrar, BorderLayout.SOUTH);
+        contenedorSuperior.add(header,BorderLayout.NORTH);
+        contenedorSuperior.add(panelCerrar,BorderLayout.SOUTH);
 
-        add(contenedorSuperior, BorderLayout.NORTH);
+        add(contenedorSuperior,BorderLayout.NORTH);
 
-        // ================= PANEL CENTRAL =================
+        //================ CENTRO ====================
+
         JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setBackground(Color.WHITE);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+
+        gbc.insets = new Insets(10,10,10,10);
         gbc.anchor = GridBagConstraints.WEST;
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        centerPanel.add(new JLabel("Bienvenido: " + nombreInstructor), gbc);
+
+        centerPanel.add(new JLabel("Bienvenido: " + nombre),gbc);
 
         gbc.gridy++;
-        centerPanel.add(new JLabel("Ficha: " + ficha), gbc);
+
+        centerPanel.add(new JLabel("Especialidad: " + especialidad),gbc);
 
         gbc.gridy++;
-        centerPanel.add(new JLabel("Especialidad: " + especialidadInstructor), gbc);
 
-        add(centerPanel, BorderLayout.CENTER);
+        centerPanel.add(new JLabel("Ficha: " + numeroFicha),gbc);
 
-        // ================= BOTONES INFERIORES =================
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
-        bottomPanel.setBackground(Color.WHITE);
+        add(centerPanel,BorderLayout.CENTER);
+
+        //================ BOTONES ===================
+
+        JPanel bottomPanel = new JPanel(new FlowLayout());
 
         JButton btnRegistrar = new JButton("Registrar Asistencia");
         JButton btnExcusa = new JButton("Gestionar Excusas");
-        JButton btnVerAprendices = new JButton("Ver Aprendices");
+        JButton btnAprendices = new JButton("Ver Aprendices");
         JButton btnReportes = new JButton("Generar Reportes");
-
-
-        btnRegistrar.addActionListener(e ->{
-            new registrarAsistencia(
-                    nombreInstructor,
-                    especialidadInstructor,
-                    ficha
-            ).setVisible(true);
-
-            dispose();
-        });
-        btnExcusa.addActionListener(e -> {
-
-            
-
-            new gestionarExcusas(ficha).setVisible(true);
-            
-        });
 
         JButton[] botones = {
                 btnRegistrar,
                 btnExcusa,
-                btnVerAprendices,
+                btnAprendices,
                 btnReportes
         };
 
-        for (JButton b : botones) {
+        for(JButton b : botones){
 
-            b.setPreferredSize(new Dimension(250, 80));
-            b.setBackground(new Color(0, 180, 0));
+            b.setPreferredSize(new Dimension(220,70));
+            b.setBackground(new Color(0,180,0));
             b.setForeground(Color.WHITE);
-            b.setFont(new Font("Arial", Font.BOLD, 14));
-            b.setFocusPainted(false);
 
             bottomPanel.add(b);
+
         }
 
-        add(bottomPanel, BorderLayout.SOUTH);
+        add(bottomPanel,BorderLayout.SOUTH);
 
-        // ================= EVENTO CERRAR SESIÓN =================
-        btnCerrar.addActionListener(e -> {
+        //================ EVENTOS ===================
 
-            JOptionPane.showMessageDialog(this, "Sesión cerrada");
+        btnRegistrar.addActionListener(e -> {
+
+            new seleccionarFicha(
+                    idInstructor,
+                    nombre,
+                    especialidad
+            ).setVisible(true);
 
             dispose();
 
-            Vista.Login login = new Vista.Login();
-            login.setVisible(true);
+        });
+
+        btnExcusa.addActionListener(e -> {
+
+            new gestionarExcusas(numeroFicha).setVisible(true);
 
         });
 
-    }
+        btnCerrar.addActionListener(e -> {
 
-    public panelInstructor() {
-        this("Prueba", "0000", "Prueba");
+            dispose();
+
+            new Vista.Login().setVisible(true);
+
+        });
+
     }
 
     public static void main(String[] args) {
@@ -141,12 +144,14 @@ public class panelInstructor extends JFrame {
         SwingUtilities.invokeLater(() -> {
 
             new panelInstructor(
-                    "Pedro Gomez",
-                    "3364343",
-                    "Análisis y Desarrollo de Software"
+                    5,
+                    "María Gómez",
+                    "Análisis y Desarrollo de Software",
+                    "3364343"
             ).setVisible(true);
 
         });
 
     }
+
 }

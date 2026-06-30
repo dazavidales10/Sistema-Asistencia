@@ -1,6 +1,6 @@
 package Vista.instructor;
 
-import Modelo.Conexion;
+import Conexion.Conexion;
 
 import java.io.File;
 import javax.swing.*;
@@ -126,20 +126,24 @@ public class gestionarExcusas extends JFrame {
         Connection con = Conexion.conectar();
 
         String sql = """
-            SELECT
-                e.idExcusa,
-                u.nombre,
-                e.fechaEnvio,
-                e.motivo,
-                e.archivo,
-                e.estado
-            FROM excusa e
-            INNER JOIN aprendiz a
-                ON e.idAprendiz = a.idAprendiz
-            INNER JOIN usuarios u
-                ON a.id = u.id
-            WHERE a.numeroFicha = ?
-            """;
+        SELECT
+            e.idExcusa,
+            u.nombre,
+            e.fecha,
+            e.motivo,
+            e.archivo,
+            e.estado
+        FROM excusa e
+        INNER JOIN aprendiz a
+            ON e.idAprendiz = a.idAprendiz
+        INNER JOIN usuarios u
+            ON a.id = u.id
+        WHERE e.idInstructor = (
+            SELECT idInstructor
+            FROM instructor
+            WHERE numeroFicha = ?
+        )
+        """;
 
         PreparedStatement ps = con.prepareStatement(sql);
 
@@ -159,7 +163,7 @@ public class gestionarExcusas extends JFrame {
 
                     rs.getInt("idExcusa"),
                     rs.getString("nombre"),
-                    rs.getTimestamp("fechaEnvio"),
+                    rs.getDate("fecha"),
                     rs.getString("motivo"),
                     new File(ruta).getName(),
                     rs.getString("estado")
@@ -197,7 +201,7 @@ public class gestionarExcusas extends JFrame {
 
         try{
 
-            Connection con=Conexion.conectar();
+            Connection con= Conexion.conectar();
 
             PreparedStatement ps=con.prepareStatement(
 

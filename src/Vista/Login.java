@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 
 import javax.swing.*;
 
-import Modelo.Conexion;
+import Conexion.Conexion;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -17,7 +17,6 @@ import java.util.prefs.Preferences;
 
 public class Login extends JFrame {
 
-    private boolean mostrar = false;
     private JPasswordField txtPass;
     private JTextField txtId;
     private JComboBox<String> cbTipo;
@@ -42,7 +41,7 @@ public class Login extends JFrame {
                     "c.area, " +
                     "i.especialidad " +
                     "FROM usuarios u " +
-                    "LEFT JOIN aprendiz a ON u.id = a.id " +
+                    "LEFT JOIN aprendiz a ON u.id = a.idInstructor " +
                     "LEFT JOIN coordinador c ON u.id = c.id " +
                     "LEFT JOIN instructor i ON u.id = i.id " +
                     "WHERE u.id = ?";
@@ -61,15 +60,16 @@ public class Login extends JFrame {
                         new Vista.aprendiz.PanelAprendiz(
                             rs.getInt("id"),
                             rs.getString("nombre"),
-                            rs.getString("numeroFicha")
+                            rs.getString("fichaInstructor")
                         ).setVisible(true);
 
                     } else if (rol.equals("Instructor")) {
 
                         new Vista.instructor.panelInstructor(
+                            rs.getInt("id"),
                             rs.getString("nombre"),
-                            "N/A",
-                            rs.getString("especialidad")
+                            rs.getString("especialidad"),
+                            rs.getString("fichaInstructor")
                         ).setVisible(true);
 
                     } else if (rol.equals("Coordinador")) {
@@ -181,6 +181,7 @@ public class Login extends JFrame {
                     "i.especialidad, " +
                     "i.numeroFicha AS fichaInstructor " +
                     "FROM usuarios u " +
+
                     "LEFT JOIN aprendiz a ON u.id=a.id " +
                     "LEFT JOIN coordinador c ON u.id=c.id " +
                     "LEFT JOIN instructor i ON u.id=i.id " +
@@ -188,6 +189,8 @@ public class Login extends JFrame {
                     "AND u.tipoDocumento=? " +
                     "AND u.rol=? " +
                     "AND u.password=?";
+
+
 
                 PreparedStatement ps = con.prepareStatement(sql);
 
@@ -225,10 +228,11 @@ public class Login extends JFrame {
                 System.out.println("Ficha BD: " + rs.getString("fichaInstructor"));
                 System.out.println("===========================");
                         new Vista.instructor.panelInstructor(
+                            rs.getInt("id"),
                             rs.getString("nombre"),
                             rs.getString("especialidad"),
                             rs.getString("fichaInstructor")
-                        ).setVisible(true);
+                        ).setVisible(true);;
 
                     } else if (rol.equals("Coordinador")) {
 
@@ -267,4 +271,4 @@ public class Login extends JFrame {
     public static void main(String[] args) {
         new Login().setVisible(true);
     }
-}
+} 

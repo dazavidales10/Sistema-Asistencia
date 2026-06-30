@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 
 import javax.swing.*;
 
-import Modelo.Conexion;
+import Conexion.Conexion;
 
 public class dialogInstructor extends JDialog {
 
