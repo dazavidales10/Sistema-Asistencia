@@ -120,6 +120,11 @@ public class PanelAprendiz extends JFrame {
         JButton btnExcusa = new JButton("Enviar Excusa");
         JButton btnConsultar = new JButton("Consultar Asistencia");
 
+// Evento del botón Enviar Excusa
+        btnExcusa.addActionListener(e -> {
+        new enviarExcusa(idUsuario).setVisible(true);
+        });
+
         JButton[] botones = {
                 btnHistorial,
                 btnExcusa,

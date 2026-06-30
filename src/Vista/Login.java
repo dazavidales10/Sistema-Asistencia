@@ -176,17 +176,18 @@ public class Login extends JFrame {
 
                 String sql =
                     "SELECT u.*, " +
-                    "a.numeroFicha, " +
+                    "a.numeroFicha AS fichaAprendiz, " +
                     "c.area, " +
-                    "i.especialidad " +
+                    "i.especialidad, " +
+                    "i.numeroFicha AS fichaInstructor " +
                     "FROM usuarios u " +
-                    "LEFT JOIN aprendiz a ON u.id = a.id " +
-                    "LEFT JOIN coordinador c ON u.id = c.id " +
-                    "LEFT JOIN instructor i ON u.id = i.id " +
-                    "WHERE u.identificacion = ? " +
-                    "AND u.tipoDocumento = ? " +
-                    "AND u.rol = ? " +
-                    "AND u.password = ?";
+                    "LEFT JOIN aprendiz a ON u.id=a.id " +
+                    "LEFT JOIN coordinador c ON u.id=c.id " +
+                    "LEFT JOIN instructor i ON u.id=i.id " +
+                    "WHERE u.identificacion=? " +
+                    "AND u.tipoDocumento=? " +
+                    "AND u.rol=? " +
+                    "AND u.password=?";
 
                 PreparedStatement ps = con.prepareStatement(sql);
 
@@ -213,15 +214,20 @@ public class Login extends JFrame {
                         new Vista.aprendiz.PanelAprendiz(
                             rs.getInt("id"),
                             rs.getString("nombre"),
-                            rs.getString("numeroFicha")
+                            rs.getString("fichaAprendiz")
                         ).setVisible(true);
 
                     } else if (rol.equals("Instructor")) {
 
+                        System.out.println("========== LOGIN ==========");
+                System.out.println("Nombre: " + rs.getString("nombre"));
+                System.out.println("Especialidad BD: " + rs.getString("especialidad"));
+                System.out.println("Ficha BD: " + rs.getString("fichaInstructor"));
+                System.out.println("===========================");
                         new Vista.instructor.panelInstructor(
                             rs.getString("nombre"),
-                            "N/A",
-                            rs.getString("especialidad")
+                            rs.getString("especialidad"),
+                            rs.getString("fichaInstructor")
                         ).setVisible(true);
 
                     } else if (rol.equals("Coordinador")) {
@@ -248,13 +254,13 @@ public class Login extends JFrame {
 
             } catch (Exception ex) {
 
-                ex.printStackTrace();
+    ex.printStackTrace();
 
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Error al conectar con la base de datos"
-                );
-            }
+    JOptionPane.showMessageDialog(
+        this,
+        ex.toString()
+    );
+}
         });
     }
 

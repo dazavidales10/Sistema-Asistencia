@@ -10,6 +10,12 @@ public class panelInstructor extends JFrame {
 
     public panelInstructor(String nombreInstructor, String especialidadInstructor, String ficha) {
 
+        System.out.println("==================================");
+    System.out.println("Nombre: " + nombreInstructor);
+    System.out.println("Especialidad: " + especialidadInstructor);
+    System.out.println("Ficha: " + ficha);
+    System.out.println("==================================");
+
         setTitle("Panel Instructor");
         setSize(1200, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -83,6 +89,13 @@ public class panelInstructor extends JFrame {
             ).setVisible(true);
 
             dispose();
+        });
+        btnExcusa.addActionListener(e -> {
+
+            
+
+            new gestionarExcusas(ficha).setVisible(true);
+            
         });
 
         JButton[] botones = {

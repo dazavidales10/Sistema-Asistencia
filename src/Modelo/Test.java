@@ -13,7 +13,7 @@ public class Test {
 
             // Conexión a XAMPP MySQL
             con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3307/sistemaasistencia",
+                    "jdbc:mysql://localhost:3306/sistemaasistencia",
                     "root",
                     ""
             );
