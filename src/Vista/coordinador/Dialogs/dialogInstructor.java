@@ -123,7 +123,7 @@ public class DialogInstructor extends JDialog {
                 String sqlUsuario =
                         "INSERT INTO usuarios " +
                         "(identificacion,tipoDocumento,rol,password,nombre) " +
-                        "VALUES(?,?, 'Instructor','123456', ?)";
+                        "VALUES(?,?, 'Instructor','654321', ?)";
 
                 PreparedStatement psUsuario =
                         con.prepareStatement(
@@ -146,21 +146,39 @@ public class DialogInstructor extends JDialog {
                 }
 
                 // Insertar instructor
-                String sqlInstructor =
-                        "INSERT INTO instructor(especialidad,id,numeroFicha) VALUES(?,?,?)";
+                                String sqlInstructor =
+                        """
+                        INSERT INTO instructor
+                        (
+                        id,
+                        especialidad,
+                        numeroFicha
+                        )
+                        VALUES
+                        (
+                        ?,
+                        ?,
+                        ?
+                        )
+                        """;
 
                 PreparedStatement psInstructor =
                         con.prepareStatement(sqlInstructor);
 
-                psInstructor.setString(
-                        1,
-                        txtEspecialidad.getText());
-
                 psInstructor.setInt(
+                        1,
+                        idUsuario
+                );
+
+                psInstructor.setString(
                         2,
-                        idUsuario);
-                        
-                psInstructor.setString(3, txtnumeroFicha.getText());
+                        txtEspecialidad.getText()
+                );
+
+                psInstructor.setString(
+                        3,
+                        txtnumeroFicha.getText()
+                );
 
                 psInstructor.executeUpdate();
 
@@ -192,23 +210,23 @@ public class DialogInstructor extends JDialog {
                 psUsuario.executeUpdate();
 
                 // Actualizar instructor 
-                String sqlInstructor =
-                        "UPDATE instructor " +
-                        "SET especialidad=? " +
-                        "WHERE id = (" +
-                        "SELECT id FROM usuarios " +
-                        "WHERE identificacion=?)";
+                String sqlInstructor = """
+                                UPDATE instructor
+                                SET especialidad = ?,
+                                numeroFicha = ?
+                                WHERE id = (
+                                SELECT id
+                                FROM usuarios
+                                WHERE identificacion = ?
+                                )
+                                """;
 
                 PreparedStatement psInstructor =
                         con.prepareStatement(sqlInstructor);
 
-                psInstructor.setString(
-                        1,
-                        txtEspecialidad.getText());
-
-                psInstructor.setString(
-                        2,
-                        txtDocumento.getText());
+                psInstructor.setString(1, txtEspecialidad.getText());
+                psInstructor.setString(2, txtnumeroFicha.getText());
+                psInstructor.setString(3, txtDocumento.getText());
 
                 psInstructor.executeUpdate();
 

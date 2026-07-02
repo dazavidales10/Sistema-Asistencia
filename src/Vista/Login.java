@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import javax.swing.*;
 
 import Conexion.Conexion;
+import Vista.aprendiz.PanelAprendiz;
+import Vista.coordinador.PanelCoordinador;
+import Vista.instructor.PanelInstructor;
 
 import java.awt.*;
 //Recordar iniciar sesion 
@@ -26,28 +29,50 @@ public class Login extends JFrame {
 
     public Login() {
 
-        int idGuardado = prefs.getInt("idUsuario", -1);
-        System.out.println("ID GUARDADO = " + idGuardado);
+        String usuarioGuardado =
+        prefs.get("usuario", null);
 
-        if (idGuardado != -1) {
+
+        System.out.println("ID GUARDADO = " + usuarioGuardado);
+
+        if(usuarioGuardado!=null){
 
             try {
 
                 Connection con = Conexion.conectar();
 
-                String sql =
-                    "SELECT u.*, " +
-                    "a.numeroFicha, " +
-                    "c.area, " +
-                    "i.especialidad " +
-                    "FROM usuarios u " +
-                    "LEFT JOIN aprendiz a ON u.id = a.idInstructor " +
-                    "LEFT JOIN coordinador c ON u.id = c.id " +
-                    "LEFT JOIN instructor i ON u.id = i.id " +
-                    "WHERE u.id = ?";
+                String sql = """
+                        SELECT
+                            u.id,
+                            u.identificacion,
+                            u.nombre,
+                            u.rol,
+
+                            a.idAprendiz,
+                            a.numeroFicha AS fichaAprendiz,
+
+                            c.area,
+
+                            i.idInstructor,
+                            i.especialidad,
+                            i.numeroFicha AS fichaInstructor
+
+                            FROM usuarios u
+
+                        LEFT JOIN aprendiz a
+                        ON u.identificacion=a.documento
+
+                        LEFT JOIN coordinador c
+                        ON u.id=c.id
+
+                        LEFT JOIN instructor i
+                        ON u.id=i.id
+
+                        WHERE u.identificacion=?
+                        """;
 
                 PreparedStatement ps = con.prepareStatement(sql);
-                ps.setInt(1, idGuardado);
+                ps.setString(1,prefs.get("usuario", ""));
 
                 ResultSet rs = ps.executeQuery();
 
@@ -57,16 +82,22 @@ public class Login extends JFrame {
 
                     if (rol.equals("Aprendiz")) {
 
-                        new Vista.aprendiz.PanelAprendiz(
-                            rs.getInt("id"),
-                            rs.getString("nombre"),
-                            rs.getString("fichaInstructor")
+                        new PanelAprendiz(
+
+                                rs.getInt("idAprendiz"),
+
+                                rs.getString("nombre"),
+
+                                rs.getString("fichaAprendiz")
+
                         ).setVisible(true);
+
+                        dispose();
 
                     } else if (rol.equals("Instructor")) {
 
-                        new Vista.instructor.PanelInstructor(
-                            rs.getInt("id"),
+                        new PanelInstructor(
+                            rs.getInt("idInstructor"),
                             rs.getString("nombre"),
                             rs.getString("especialidad"),
                             rs.getString("fichaInstructor")
@@ -74,10 +105,15 @@ public class Login extends JFrame {
 
                     } else if (rol.equals("Coordinador")) {
 
-                        new Vista.coordinador.PanelCoordinador(
-                            rs.getString("nombre"),
-                            rs.getString("area")
+                        new PanelCoordinador(
+
+                                rs.getString("nombre"),
+
+                                rs.getString("area")
+
                         ).setVisible(true);
+
+                        dispose();
                     }
 
                     rs.close();
@@ -203,7 +239,7 @@ public class Login extends JFrame {
 
         btn.addActionListener(e -> {
 
-            String identificacion = txtId.getText();
+            String identificacion = txtId.getText().trim();
             String tipo = cbTipo.getSelectedItem().toString();
             String rol = cbRol.getSelectedItem().toString();
             String pass = String.valueOf(txtPass.getPassword());
@@ -212,24 +248,40 @@ public class Login extends JFrame {
 
                 Connection con = Conexion.conectar();
 
-                String sql =
-                    "SELECT u.*, " +
-                    "a.numeroFicha AS fichaAprendiz, " +
-                    "c.area, " +
-                    "i.especialidad, " +
-                    "i.numeroFicha AS fichaInstructor " +
-                    "FROM usuarios u " +
+                String sql = """
+                        SELECT
 
-                    "LEFT JOIN aprendiz a ON u.identificacion = a.documento " +
-                    "LEFT JOIN coordinador c ON u.id=c.id " +
-                    "LEFT JOIN instructor i ON u.id=i.id " +
-                    "WHERE u.identificacion=? " +
-                    "AND u.tipoDocumento=? " +
-                    "AND u.rol=? " +
-                    "AND u.password=?";
+                            u.id,
+                            u.identificacion,
+                            u.nombre,
+                            u.rol,
 
+                            a.idAprendiz,
+                            a.numeroFicha AS fichaAprendiz,
 
-                    System.out.println(sql);
+                            c.area,
+
+                            i.idInstructor,
+                            i.especialidad,
+                            i.numeroFicha AS fichaInstructor
+
+                        FROM usuarios u
+
+                        LEFT JOIN aprendiz a
+                        ON u.identificacion = a.documento
+
+                        LEFT JOIN coordinador c
+                        ON u.id = c.id
+
+                        LEFT JOIN instructor i
+                        ON u.id = i.id
+
+                        WHERE u.identificacion = ?
+                        AND u.tipoDocumento = ?
+                        AND u.rol = ?
+                        AND u.password = ?
+                        """;
+
                 PreparedStatement ps = con.prepareStatement(sql);
 
                 ps.setString(1, identificacion);
@@ -239,76 +291,107 @@ public class Login extends JFrame {
 
                 ResultSet rs = ps.executeQuery();
 
-                if (rs.next()) {
+                if(rs.next()){
 
-                    if (chkRecordar.isSelected()) {
+                    if(chkRecordar.isSelected()){
 
-                        prefs.putInt("idUsuario", rs.getInt("id"));
+                        prefs.put(
+                                "usuario",
+                                rs.getString("identificacion")
+                        );
 
-                    } else {
+                    }else{
 
-                        prefs.remove("idUsuario");
+                        prefs.remove("usuario");
+
                     }
+
                     JOptionPane.showMessageDialog(
-                        this,
-                        "¡Bienvenido, " + rs.getString("nombre") + "!",
-                        "Inicio de sesión",
-                        JOptionPane.INFORMATION_MESSAGE
+                            this,
+                            "¡Bienvenido, " + rs.getString("nombre") + "!",
+                            "Inicio de sesión",
+                            JOptionPane.INFORMATION_MESSAGE
                     );
 
-                    if (rol.equals("Aprendiz")) {
+                    switch(rol){
 
-                        new Vista.aprendiz.PanelAprendiz(
-                            rs.getInt("id"),
-                            rs.getString("nombre"),
-                            rs.getString("fichaAprendiz")
-                        ).setVisible(true);
+                        case "Aprendiz":
 
-                    } else if (rol.equals("Instructor")) {
+                            new PanelAprendiz(
 
-                        System.out.println("========== LOGIN ==========");
-                System.out.println("Nombre: " + rs.getString("nombre"));
-                System.out.println("Especialidad BD: " + rs.getString("especialidad"));
-                System.out.println("Ficha BD: " + rs.getString("fichaInstructor"));
-                System.out.println("===========================");
-                        new Vista.instructor.PanelInstructor(
-                            rs.getInt("id"),
-                            rs.getString("nombre"),
-                            rs.getString("especialidad"),
-                            rs.getString("fichaInstructor")
-                        ).setVisible(true);;
+                                    rs.getInt("idAprendiz"),
 
-                    } else if (rol.equals("Coordinador")) {
+                                    rs.getString("nombre"),
 
-                        new Vista.coordinador.PanelCoordinador(
-                            rs.getString("nombre"),
-                            rs.getString("area")
-                        ).setVisible(true);
+                                    rs.getString("fichaAprendiz")
+
+                            ).setVisible(true);
+
+                            break;
+
+                        case "Instructor":
+
+                            System.out.println("ID INSTRUCTOR = " + rs.getInt("idInstructor"));
+                            System.out.println("NOMBRE INSTRUCTOR = " + rs.getString("nombre"));
+                            System.out.println("ESPECIALIDAD = " + rs.getString("especialidad"));
+                            System.out.println("FICHA INSTRUCTOR = " + rs.getString("fichaInstructor"));
+                            new PanelInstructor(
+
+                                    rs.getInt("idInstructor"),
+
+                                    rs.getString("nombre"),
+
+                                    rs.getString("especialidad"),
+
+                                    rs.getString("fichaInstructor")
+
+                            ).setVisible(true);
+
+                            break;
+
+                        case "Coordinador":
+
+                        System.out.println("NOMBRE COORDINADOR = " + rs.getString("nombre"));
+                        System.out.println("AREA COORDINADOR = " + rs.getString("area"));
+
+                            new PanelCoordinador(
+
+                                    rs.getString("nombre"),
+
+                                    rs.getString("area")
+
+                            ).setVisible(true);
+
+                            break;
+
                     }
 
                     dispose();
 
-                } else {
+                }else{
 
                     JOptionPane.showMessageDialog(
-                        this,
-                        "Credenciales incorrectas"
+                            this,
+                            "Credenciales incorrectas"
                     );
+
                 }
 
                 rs.close();
                 ps.close();
                 con.close();
 
-            } catch (Exception ex) {
+            }catch(Exception ex){
 
-    ex.printStackTrace();
+                ex.printStackTrace();
 
-    JOptionPane.showMessageDialog(
-        this,
-        ex.toString()
-    );
-}
+                JOptionPane.showMessageDialog(
+                        this,
+                        ex.getMessage()
+                );
+
+            }
+
         });
     }
 

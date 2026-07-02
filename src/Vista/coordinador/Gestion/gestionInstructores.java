@@ -13,6 +13,7 @@ import Conexion.Conexion;
 
 import java.awt.*;
 
+import Vista.ReportePDF;
 import Vista.coordinador.PanelCoordinador;
 import Vista.coordinador.Dialogs.DialogInstructor;
 
@@ -153,6 +154,9 @@ public class gestionInstructores extends JFrame {
         panel.add(btnExportar);
 
 
+
+
+
         //Tabla buscador de los Instructores
 
         String[] columnas = {
@@ -225,6 +229,8 @@ public class gestionInstructores extends JFrame {
         cargarInstructores();
 
 
+        //EVENTOS DE LOS BOTONES !! IMPORTANTE NO CAMBIAR
+
         btnAgregar.addActionListener(e -> {
 
             DialogInstructor dialog =
@@ -233,6 +239,20 @@ public class gestionInstructores extends JFrame {
             dialog.setVisible(true);
 
             cargarInstructores();
+        });
+
+        btnExportar.addActionListener(e -> {
+
+            ReportePDF.generarReporte(
+
+                    tablaInstructores,
+
+                    "REPORTE DE INSTRUCTORES",
+
+                    "Reporte_Instructores"
+
+            );
+
         });
 
         btnEliminar.addActionListener(e -> {
@@ -473,6 +493,8 @@ public class gestionInstructores extends JFrame {
                 alto
         );
 
+        btnBuscar.addActionListener(e -> buscarInstructor());
+
         //================ TABLA =================
 
         scrollTabla.setBounds(
@@ -492,16 +514,19 @@ public class gestionInstructores extends JFrame {
 
             Connection con = Conexion.conectar();
 
-            String sql =
-                    "SELECT " +
-                    "u.identificacion, " +
-                    "u.nombre, " +
-                    "u.tipoDocumento, " +
-                    "i.numeroFicha, " +
-                    "i.especialidad " +
-                    "FROM usuarios u " +
-                    "INNER JOIN instructor i ON u.id = i.id " +
-                    "WHERE u.rol = 'Instructor'";
+            String sql = """
+                    SELECT
+                        u.identificacion,
+                        u.nombre,
+                        u.tipoDocumento,
+                        i.numeroFicha,
+                        i.especialidad
+                    FROM instructor i
+                    INNER JOIN usuarios u
+                        ON u.id = i.id
+                    WHERE u.rol = 'Instructor'
+                    ORDER BY u.nombre
+                    """;
 
             PreparedStatement ps = con.prepareStatement(sql);
 
@@ -538,6 +563,71 @@ public class gestionInstructores extends JFrame {
                     null,
                     e.getMessage());
         }
+    }
+    private void buscarInstructor() {
+
+        modeloTabla.setRowCount(0);
+
+        try {
+
+            Connection con = Conexion.conectar();
+
+            String sql = """
+                SELECT
+                    u.identificacion,
+                    u.nombre,
+                    u.tipoDocumento,
+                    i.numeroFicha,
+                    i.especialidad
+                FROM instructor i
+                INNER JOIN usuarios u
+                    ON u.id = i.id
+                WHERE u.rol='Instructor'
+                AND (
+                    u.nombre LIKE ?
+                    OR u.identificacion LIKE ?
+                    OR i.numeroFicha LIKE ?
+                )
+                ORDER BY u.nombre
+                """;
+
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            String buscar = "%" + txtNumeroFicha.getText().trim() + "%";
+
+            ps.setString(1, buscar);
+            ps.setString(2, buscar);
+            ps.setString(3, buscar);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                modeloTabla.addRow(new Object[]{
+
+                        rs.getString("identificacion"),
+                        rs.getString("nombre"),
+                        rs.getString("tipoDocumento"),
+                        rs.getString("numeroFicha"),
+                        rs.getString("especialidad"),
+                        false
+
+                });
+
+            }
+
+            rs.close();
+            ps.close();
+            con.close();
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+
+        }
+
     }
 
 }

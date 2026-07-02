@@ -12,6 +12,7 @@ import Conexion.Conexion;
 
 import java.awt.*;
 
+import Vista.ReportePDF;
 import Vista.coordinador.PanelCoordinador;
 
 public class gestionFichas extends JFrame {
@@ -242,157 +243,173 @@ public class gestionFichas extends JFrame {
 
         cargarFichas();
 
+
+
+        btnExportar.addActionListener(e -> {
+
+                ReportePDF.generarReporte(
+
+                        tablaFichas,
+
+                        "REPORTE DE FICHAS",
+
+                        "Reporte_Fichas"
+
+                );
+
+        });
+
         // ================= AGREGAR =================
 
         btnAgregar.addActionListener(e -> {
 
-            JTextField txtNumeroFicha = new JTextField();
-            JTextField txtPrograma = new JTextField();
+                JTextField txtNumeroFicha = new JTextField();
+                JTextField txtPrograma = new JTextField();
 
-            String[] jornadas = {
-                    "Mañana",
-                    "Tarde",
-                    "Noche",
-                    "Mixta"
-            };
+                String[] jornadas = {
+                        "Mañana",
+                        "Tarde",
+                        "Noche",
+                        "Mixta"
+                };
 
-            JComboBox<String> cbJornada =
-                    new JComboBox<>(jornadas);
+                JComboBox<String> cbJornada =
+                        new JComboBox<>(jornadas);
 
-            JPanel formulario = new JPanel(
-                    new GridLayout(0, 1));
+                JPanel formulario = new JPanel(
+                        new GridLayout(0, 1));
 
-            formulario.add(new JLabel("Número Ficha"));
-            formulario.add(txtNumeroFicha);
+                formulario.add(new JLabel("Número Ficha"));
+                formulario.add(txtNumeroFicha);
 
-            formulario.add(new JLabel("Programa"));
-            formulario.add(txtPrograma);
+                formulario.add(new JLabel("Programa"));
+                formulario.add(txtPrograma);
 
-            formulario.add(new JLabel("Jornada"));
-            formulario.add(cbJornada);
+                formulario.add(new JLabel("Jornada"));
+                formulario.add(cbJornada);
 
-            int resultado = JOptionPane.showConfirmDialog(
-                    null,
-                    formulario,
-                    "Agregar Ficha",
-                    JOptionPane.OK_CANCEL_OPTION
-            );
+                int resultado = JOptionPane.showConfirmDialog(
+                        null,
+                        formulario,
+                        "Agregar Ficha",
+                        JOptionPane.OK_CANCEL_OPTION
+                );
 
-            if (resultado == JOptionPane.OK_OPTION) {
+                if (resultado == JOptionPane.OK_OPTION) {
 
-                try {
+                        try {
 
-                    Connection con = Conexion.conectar();
+                        Connection con = Conexion.conectar();
 
-                    String sql =
-                            "INSERT INTO ficha " +
-                            "(programa, numeroFicha, jornada) " +
-                            "VALUES (?, ?, ?)";
+                        String sql =
+                                "INSERT INTO ficha " +
+                                "(programa, numeroFicha, jornada) " +
+                                "VALUES (?, ?, ?)";
 
-                    PreparedStatement ps =
-                            con.prepareStatement(sql);
+                        PreparedStatement ps =
+                                con.prepareStatement(sql);
 
-                    ps.setString(
-                            1,
-                            txtPrograma.getText().trim());
+                        ps.setString(
+                                1,
+                                txtPrograma.getText().trim());
 
-                    ps.setString(
-                            2,
-                            txtNumeroFicha.getText().trim());
+                        ps.setString(
+                                2,
+                                txtNumeroFicha.getText().trim());
 
-                    ps.setString(
-                            3,
-                            cbJornada.getSelectedItem().toString());
+                        ps.setString(
+                                3,
+                                cbJornada.getSelectedItem().toString());
 
-                    ps.executeUpdate();
+                        ps.executeUpdate();
 
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Ficha agregada correctamente");
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Ficha agregada correctamente");
 
-                    cargarFichas();
+                        cargarFichas();
 
-                    ps.close();
-                    con.close();
+                        ps.close();
+                        con.close();
 
-                } catch (Exception ex) {
+                        } catch (Exception ex) {
 
-                    ex.printStackTrace();
+                        ex.printStackTrace();
 
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Error al agregar ficha");
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Error al agregar ficha");
+                        }
                 }
-            }
         });
 
         // ================= ELIMINAR =================
 
         btnEliminar.addActionListener(e -> {
 
-            int filaSeleccionada = -1;
+                int filaSeleccionada = -1;
 
-            for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
 
-                Boolean seleccionado =
-                        (Boolean) modeloTabla.getValueAt(i, 3);
+                        Boolean seleccionado =
+                                (Boolean) modeloTabla.getValueAt(i, 3);
 
-                if (seleccionado != null && seleccionado) {
+                        if (seleccionado != null && seleccionado) {
 
-                    filaSeleccionada = i;
-                    break;
-                }
-            }
-
-            if (filaSeleccionada == -1) {
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Seleccione una ficha");
-
-                return;
-            }
-
-            String numeroFicha =
-                    modeloTabla.getValueAt(
-                            filaSeleccionada,
-                            0).toString();
-
-            try {
-
-                Connection con = Conexion.conectar();
-
-                String sql =
-                        "DELETE FROM ficha " +
-                        "WHERE numeroFicha = ?";
-
-                PreparedStatement ps =
-                        con.prepareStatement(sql);
-
-                ps.setString(1, numeroFicha);
-
-                int filas = ps.executeUpdate();
-
-                if (filas > 0) {
-
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Ficha eliminada correctamente");
-
-                    cargarFichas();
+                        filaSeleccionada = i;
+                        break;
+                        }
                 }
 
-                ps.close();
-                con.close();
+                if (filaSeleccionada == -1) {
 
-            } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Seleccione una ficha");
 
-                ex.printStackTrace();
+                        return;
+                }
 
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Error al eliminar ficha");
-            }
+                String numeroFicha =
+                        modeloTabla.getValueAt(
+                                filaSeleccionada,
+                                0).toString();
+
+                try {
+
+                        Connection con = Conexion.conectar();
+
+                        String sql =
+                                "DELETE FROM ficha " +
+                                "WHERE numeroFicha = ?";
+
+                        PreparedStatement ps =
+                                con.prepareStatement(sql);
+
+                        ps.setString(1, numeroFicha);
+
+                        int filas = ps.executeUpdate();
+
+                        if (filas > 0) {
+
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Ficha eliminada correctamente");
+
+                        cargarFichas();
+                        }
+
+                        ps.close();
+                        con.close();
+
+                } catch (Exception ex) {
+
+                        ex.printStackTrace();
+
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Error al eliminar ficha");
+                }
         });
 
         // ================= EDITAR =================

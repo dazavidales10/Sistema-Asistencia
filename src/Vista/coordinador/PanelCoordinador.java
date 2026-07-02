@@ -126,8 +126,10 @@ public class PanelCoordinador extends JFrame {
 
         btnExit.addActionListener(e -> {
 
-            Preferences prefs = Preferences.userNodeForPackage(Login.class);
-            prefs.remove("idUsuario");
+            Preferences prefs =
+                    Preferences.userNodeForPackage(Login.class);
+
+            prefs.remove("usuario");
 
             dispose();
 
@@ -138,8 +140,13 @@ public class PanelCoordinador extends JFrame {
         // Flecha volver
         arrow.addMouseListener(new java.awt.event.MouseAdapter() {
 
-            @Override
+        @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
+
+                Preferences prefs =
+                        Preferences.userNodeForPackage(Login.class);
+
+                prefs.remove("usuario");
 
                 dispose();
 
@@ -171,7 +178,8 @@ public class PanelCoordinador extends JFrame {
         int w = getWidth();
         int h = getHeight();
 
-        // Header
+        //================ HEADER =================
+
         panelCoordinador.setBounds(0, 0, w, 70);
 
         arrow.setBounds(20, 10, 50, 50);
@@ -183,71 +191,83 @@ public class PanelCoordinador extends JFrame {
                 30
         );
 
-        // Información
+        //================ CONTENIDO CENTRADO =================
+
+        int anchoTitulo = 400;
+        int anchoTexto = 700;
+
+        // Altura total del bloque
+        int altoBloque = 320;
+
+        // Inicio para centrar verticalmente
+        int inicioY = (h - altoBloque) / 2;
+
         titulo.setBounds(
-                (w - 300) / 2,
-                120,
-                300,
+                (w - anchoTitulo) / 2,
+                inicioY,
+                anchoTitulo,
                 60
         );
 
         nombreCoordinador.setBounds(
-                (w - 600) / 2,
-                210,
-                600,
+                (w - anchoTexto) / 2,
+                inicioY + 80,
+                anchoTexto,
                 40
         );
 
         program.setBounds(
-                (w - 600) / 2,
-                260,
-                600,
+                (w - anchoTexto) / 2,
+                inicioY + 130,
+                anchoTexto,
                 40
         );
 
-        // Botón cerrar sesión
+        //================ BOTÓN CERRAR SESIÓN =================
+
         btnExit.setBounds(
-                w - 250,
+                w - 240,
                 90,
-                200,
-                55
+                180,
+                50
         );
 
-        // Botones inferiores
-        int ancho = 230;
+
+        //Botones de Gestion Ubicacion
+
+        int ancho = 240;
         int alto = 65;
         int separacion = 40;
 
-        int total =
-                (ancho * 3) + (separacion * 2);
+        int total = (ancho * 3) + (separacion * 2);
 
         int inicioX = (w - total) / 2;
 
-        int y = h - 150;
+        // Más abajo (aprox. al 82% de la ventana)
+        int yBotones = (int)(h * 0.82);
 
         btnFichas.setBounds(
                 inicioX,
-                y,
+                yBotones,
                 ancho,
                 alto
         );
 
         btnInstr.setBounds(
                 inicioX + ancho + separacion,
-                y,
+                yBotones,
                 ancho,
                 alto
         );
 
         btnAprendices.setBounds(
                 inicioX + (ancho + separacion) * 2,
-                y,
+                yBotones,
                 ancho,
                 alto
         );
-
     }
-
+    
     //================ ESTILO BOTONES =================
 
     private void styleButton(JButton btn) {

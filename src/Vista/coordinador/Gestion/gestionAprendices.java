@@ -3,6 +3,7 @@ package Vista.coordinador.Gestion;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,10 +12,16 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
 import java.awt.Dimension;
 import Conexion.Conexion;
 import Vista.coordinador.Dialogs.DialogAprendiz;
 import Vista.coordinador.PanelCoordinador;
+import Vista.ReportePDF;
 
 public class gestionAprendices extends JFrame {
 
@@ -27,16 +34,16 @@ public class gestionAprendices extends JFrame {
     private JTextField txtNumeroFicha;
     private JPanel panel;
 
-private JLabel arrow;
-private JLabel titulo;
-private JLabel header;
-private JLabel lblBuscar;
+        private JLabel arrow;
+        private JLabel titulo;
+        private JLabel header;
+        private JLabel lblBuscar;
 
-private JButton btnBuscar;
-private JButton btnAgregar;
-private JButton btnEditar;
-private JButton btnEliminar;
-private JButton btnExportar;
+        private JButton btnBuscar;
+        private JButton btnAgregar;
+        private JButton btnEditar;
+        private JButton btnEliminar;
+        private JButton btnExportar;
 
 private JScrollPane scroll;
 
@@ -156,6 +163,7 @@ private JScrollPane scroll;
 
                 "Documento",
                 "Nombre",
+                "Tipo Documento",
                 "Programa",
                 "Teléfono",
                 "Número Ficha",
@@ -165,22 +173,22 @@ private JScrollPane scroll;
 
         modeloTabla = new DefaultTableModel(columnas,0){
 
-            @Override
-            public Class<?> getColumnClass(int column){
+                @Override
+                        public Class<?> getColumnClass(int column){
 
-                if(column==5)
-                    return Boolean.class;
+                        if(column == 6)
+                                return Boolean.class;
 
-                return String.class;
+                        return String.class;
 
-            }
+                }
 
-            @Override
-            public boolean isCellEditable(int row,int column){
+                @Override
+                        public boolean isCellEditable(int row,int column){
 
-                return column==5;
+                        return column == 6;
 
-            }
+                }
 
         };
 
@@ -195,7 +203,7 @@ private JScrollPane scroll;
         centro.setHorizontalAlignment(
                 SwingConstants.CENTER);
 
-        for(int i=0;i<5;i++){
+        for(int i=0;i<6;i++){
 
             tablaAprendices.getColumnModel()
                     .getColumn(i)
@@ -210,7 +218,7 @@ private JScrollPane scroll;
 
         panel.add(scroll);
 
-        //================ EVENTOS =================
+        //EVENTOS DE LOS BOTONES    !!IMPORTANTE NO MOVER     
 
         cargarAprendices();
 
@@ -231,167 +239,197 @@ private JScrollPane scroll;
 
         btnBuscar.addActionListener(e -> buscarPorFicha());
 
-       
+        btnExportar.addActionListener(e -> {
 
-            resizeComponents();
+                ReportePDF.generarReporte(
 
-            addComponentListener(new java.awt.event.ComponentAdapter() {
+                        tablaAprendices,
+
+                        "REPORTE DE APRENDICES",
+
+                        "Reporte_Aprendices"
+
+                );
+
+        });
+
+        //Responsive para el Desing
+
+        resizeComponents();
+
+        addComponentListener(new java.awt.event.ComponentAdapter() {
 
                 @Override
-                public void componentResized(java.awt.event.ComponentEvent e) {
+                        public void componentResized(java.awt.event.ComponentEvent e) {
 
-                    resizeComponents();
+                        resizeComponents();
 
                 }
 
-            });
-            
-    setLocationRelativeTo(null);
-    }
+                });
+
+        setLocationRelativeTo(null);
+        }
 
         private void cargarAprendices() {
 
-        modeloTabla.setRowCount(0);
+                modeloTabla.setRowCount(0);
 
-        String sql = """
-                SELECT
-                    a.documento,
-                    u.nombre,
-                    a.programa,
-                    a.telefono,
-                    a.numeroFicha
-                FROM aprendiz a
-                INNER JOIN usuarios u
-                    ON a.documento = u.identificacion
-                ORDER BY u.nombre
-                """;
+                String sql = """
+                        SELECT
+                                a.documento,
+                                u.nombre,
+                                u.tipoDocumento,
+                                a.programa,
+                                a.telefono,
+                                a.numeroFicha
+                        FROM aprendiz a
+                        INNER JOIN usuarios u
+                                ON a.documento = u.identificacion
+                        ORDER BY u.nombre
+                        """;
 
-        try (Connection con = Conexion.conectar();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                try (Connection con = Conexion.conectar();
+                        PreparedStatement ps = con.prepareStatement(sql);
+                        ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
+                        while (rs.next()) {
 
-                modeloTabla.addRow(new Object[]{
+                        modeloTabla.addRow(new Object[]{
 
-                        rs.getString("documento"),
-                        rs.getString("nombre"),
-                        rs.getString("programa"),
-                        rs.getString("telefono"),
-                        rs.getString("numeroFicha"),
-                        false
+                                rs.getString("documento"),
+                                rs.getString("nombre"),
+                                rs.getString("tipoDocumento"),
+                                rs.getString("programa"),
+                                rs.getString("telefono"),
+                                rs.getString("numeroFicha"),
+                                false
 
-                });
+                        });
 
-            }
+                        }
 
-        } catch (Exception ex) {
+                } catch (Exception ex) {
 
-            ex.printStackTrace();
+                        ex.printStackTrace();
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    ex.getMessage()
-            );
+                        JOptionPane.showMessageDialog(
+                                this,
+                                ex.getMessage()
+                        );
 
-        }
-
-    }
-
-    private void buscarPorFicha() {
-
-        modeloTabla.setRowCount(0);
-
-        String sql = """
-                SELECT
-                    a.documento,
-                    u.nombre,
-                    a.programa,
-                    a.telefono,
-                    a.numeroFicha
-                FROM aprendiz a
-                INNER JOIN usuarios u
-                    ON a.documento = u.identificacion
-                WHERE
-                    a.numeroFicha LIKE ?
-                    OR a.documento LIKE ?
-                    OR u.nombre LIKE ?
-                ORDER BY u.nombre
-                """;
-
-        try (Connection con = Conexion.conectar();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            String busqueda =
-                    "%" + txtNumeroFicha.getText().trim() + "%";
-
-            ps.setString(1, busqueda);
-            ps.setString(2, busqueda);
-            ps.setString(3, busqueda);
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                modeloTabla.addRow(new Object[]{
-
-                        rs.getString("documento"),
-                        rs.getString("nombre"),
-                        rs.getString("programa"),
-                        rs.getString("telefono"),
-                        rs.getString("numeroFicha"),
-                        false
-
-                });
-
-            }
-
-            rs.close();
-
-        } catch (Exception ex) {
-
-            ex.printStackTrace();
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    ex.getMessage()
-            );
+                }
 
         }
 
-    }
+        private void buscarPorFicha() {
+
+                modeloTabla.setRowCount(0);
+
+                String sql = """
+                        SELECT
+                                a.documento,
+                                u.nombre,
+                                u.tipoDocumento,
+                                a.programa,
+                                a.telefono,
+                                a.numeroFicha
+                        FROM aprendiz a
+                        INNER JOIN usuarios u
+                                ON a.documento = u.identificacion
+                        WHERE
+                                a.numeroFicha LIKE ?
+                                OR a.documento LIKE ?
+                                OR u.nombre LIKE ?
+                        ORDER BY u.nombre
+                        """;
+
+                try (Connection con = Conexion.conectar();
+                        PreparedStatement ps = con.prepareStatement(sql)) {
+
+                        String busqueda = "%" + txtNumeroFicha.getText().trim() + "%";
+
+                        ps.setString(1, busqueda);
+                        ps.setString(2, busqueda);
+                        ps.setString(3, busqueda);
+
+                        ResultSet rs = ps.executeQuery();
+
+                        while (rs.next()) {
+
+                        modeloTabla.addRow(new Object[]{
+
+                                rs.getString("documento"),
+                                rs.getString("nombre"),
+                                rs.getString("tipoDocumento"),
+                                rs.getString("programa"),
+                                rs.getString("telefono"),
+                                rs.getString("numeroFicha"),
+                                false
+
+                        });
+
+                        }
+
+                        rs.close();
+
+                } catch (Exception ex) {
+
+                        ex.printStackTrace();
+
+                        JOptionPane.showMessageDialog(
+                                this,
+                                ex.getMessage()
+                        );
+
+                }
+
+        }
         private void editarAprendiz() {
 
-        int fila = obtenerFilaSeleccionada();
+                int fila = obtenerFilaSeleccionada();
 
-        if (fila == -1) {
+                if (fila == -1) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Seleccione un aprendiz");
+                        JOptionPane.showMessageDialog(
+                                this,
+                                "Seleccione un aprendiz");
 
-            return;
-        }
+                        return;
+                }
 
-        String documento = modeloTabla.getValueAt(fila, 0).toString();
-        String nombre = modeloTabla.getValueAt(fila, 1).toString();
-        String programa = modeloTabla.getValueAt(fila, 2).toString();
-        String telefono = modeloTabla.getValueAt(fila, 3).toString();
-        String ficha = modeloTabla.getValueAt(fila, 4).toString();
+                String documento =
+                        modeloTabla.getValueAt(fila, 0).toString();
 
-        DialogAprendiz dialog = new DialogAprendiz(
-                this,
-                documento,
-                nombre,
-                programa,
-                telefono,
-                ficha
-        );
+                String nombre =
+                        modeloTabla.getValueAt(fila, 1).toString();
 
-        dialog.setVisible(true);
+                String tipoDocumento =
+                        modeloTabla.getValueAt(fila, 2).toString();
 
-        cargarAprendices();
-    }
+                String programa =
+                        modeloTabla.getValueAt(fila, 3).toString();
+
+                String telefono =
+                        modeloTabla.getValueAt(fila, 4).toString();
+
+                String ficha =
+                        modeloTabla.getValueAt(fila, 5).toString();
+
+                DialogAprendiz dialog = new DialogAprendiz(
+                        this,
+                        documento,
+                        nombre,
+                        tipoDocumento,
+                        programa,
+                        telefono,
+                        ficha
+                );
+
+                dialog.setVisible(true);
+
+                cargarAprendices();
+                }
 
     private void eliminarAprendiz() {
 
@@ -594,19 +632,20 @@ private JScrollPane scroll;
 }
     
 
-    private int obtenerFilaSeleccionada() {
+        private int obtenerFilaSeleccionada() {
 
-        for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
 
-            Boolean seleccionado =
-                    (Boolean) modeloTabla.getValueAt(i, 5);
+                Boolean seleccionado =
+                        (Boolean) modeloTabla.getValueAt(i, 6);
 
-            if (seleccionado != null && seleccionado) {
-                return i;
-            }
+                if (seleccionado != null && seleccionado) {
+                        return i;
+                }
+                }
+
+                return -1;
         }
 
-        return -1;
-    }
 
 }
