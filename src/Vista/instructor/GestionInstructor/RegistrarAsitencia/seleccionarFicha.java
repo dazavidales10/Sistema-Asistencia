@@ -1,7 +1,7 @@
 package Vista.instructor.GestionInstructor.RegistrarAsitencia;
 
 import Conexion.Conexion;
-import Vista.instructor.panelInstructor;
+import Vista.instructor.PanelInstructor;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -73,7 +73,7 @@ public class seleccionarFicha extends JFrame {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent e){
 
-                        new panelInstructor(
+                        new PanelInstructor(
                                 idInstructor,
                                 nombre,
                                 especialidad,

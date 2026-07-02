@@ -10,168 +10,269 @@ import Vista.coordinador.Gestion.gestionInstructores;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-
 import java.util.prefs.Preferences;
 
 public class PanelCoordinador extends JFrame {
 
-    // Componentes globales (para moverlos en resize)
-    private JLabel arrow, lblCoordinador, panelCoordinador;
-    private JLabel titulo, nombreCoordinador, program;
+    // Componentes
+    private JLabel arrow;
+    private JLabel lblCoordinador;
+    private JLabel panelCoordinador;
 
-    private JButton btnFichas, btnInstr, btnAprendices, btnExit;
+    private JLabel titulo;
+    private JLabel nombreCoordinador;
+    private JLabel program;
+
+    private JButton btnFichas;
+    private JButton btnInstr;
+    private JButton btnAprendices;
+    private JButton btnExit;
 
     private String nombre;
     private String area;
 
     public PanelCoordinador(String nombre, String area) {
 
-        this.area = area;
         this.nombre = nombre;
-
+        this.area = area;
 
         setTitle("Panel Coordinador");
-        setSize(1920, 1080);
+        setSize(1920,1080);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
         panel.setLayout(null);
         panel.setBackground(Color.WHITE);
-        panel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
+        panel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,2));
+
         setContentPane(panel);
 
-        // ================= HEADER =================
+        //================ HEADER =================
+
+        panelCoordinador = new JLabel();
+        panelCoordinador.setOpaque(true);
+        panelCoordinador.setBackground(new Color(0,180,0));
+        panel.add(panelCoordinador);
+
         arrow = new JLabel("←");
-        arrow.setFont(new Font("Arial", Font.BOLD, 40));
+        arrow.setFont(new Font("Arial",Font.BOLD,40));
         arrow.setForeground(Color.WHITE);
         arrow.setCursor(new Cursor(Cursor.HAND_CURSOR));
         panel.add(arrow);
 
         lblCoordinador = new JLabel("Panel Coordinador");
         lblCoordinador.setForeground(Color.WHITE);
-        lblCoordinador.setFont(new Font("Arial", Font.BOLD, 20));
+        lblCoordinador.setFont(new Font("Arial",Font.BOLD,22));
         panel.add(lblCoordinador);
 
-        panelCoordinador = new JLabel();
-        panelCoordinador.setOpaque(true);
-        panelCoordinador.setBackground(new Color(0, 180, 0));
-        panel.add(panelCoordinador);
+        //================ CONTENIDO =================
 
-        // ================= CONTENIDO =================
         titulo = new JLabel("Coordinador");
-        titulo.setFont(new Font("Arial", Font.PLAIN, 50));
+        titulo.setFont(new Font("Arial",Font.BOLD,48));
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(titulo);
 
         nombreCoordinador = new JLabel("Nombre: " + nombre);
-        nombreCoordinador.setFont(new Font("Arial", Font.PLAIN, 30));
+        nombreCoordinador.setFont(new Font("Arial",Font.PLAIN,28));
+        nombreCoordinador.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(nombreCoordinador);
 
         program = new JLabel("Área: " + area);
-        program.setFont(new Font("Arial", Font.PLAIN, 30));
+        program.setFont(new Font("Arial",Font.PLAIN,28));
+        program.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(program);
 
-
-    //    Funciones de los botones
+        //================ BOTONES =================
 
         btnFichas = new JButton("Gestión Fichas");
         styleButton(btnFichas);
         panel.add(btnFichas);
 
-        // ABRIR GESTIÓN DE FICHAS
-        btnFichas.addActionListener(e -> {
-            new gestionFichas(nombre,area).setVisible(true);
-
-            dispose();
-
-        });
-
         btnInstr = new JButton("Gestión Instructores");
         styleButton(btnInstr);
         panel.add(btnInstr);
-
-        btnInstr.addActionListener(e -> {
-
-            new gestionInstructores(nombre,area).setVisible(true);
-
-            dispose();
-
-        });
-
 
         btnAprendices = new JButton("Gestión Aprendices");
         styleButton(btnAprendices);
         panel.add(btnAprendices);
 
-        btnAprendices.addActionListener(e -> {
+        btnExit = new JButton("Cerrar Sesión");
+        styleButton(btnExit);
+        panel.add(btnExit);
 
-            new gestionAprendices(nombre,area).setVisible(true);
+                //================ EVENTOS =================
 
+        btnFichas.addActionListener(e -> {
+
+            new gestionFichas(nombre, area).setVisible(true);
             dispose();
 
         });
 
-        btnExit = new JButton("Cerrar Sesión");
-        styleButton(btnExit);
-        panel.add(btnExit);
+        btnInstr.addActionListener(e -> {
+
+            new gestionInstructores(nombre, area).setVisible(true);
+            dispose();
+
+        });
+
+        btnAprendices.addActionListener(e -> {
+
+            new gestionAprendices(nombre, area).setVisible(true);
+            dispose();
+
+        });
+
         btnExit.addActionListener(e -> {
 
             Preferences prefs = Preferences.userNodeForPackage(Login.class);
             prefs.remove("idUsuario");
+
             dispose();
+
             new Login().setVisible(true);
 
         });
 
+        // Flecha volver
+        arrow.addMouseListener(new java.awt.event.MouseAdapter() {
 
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+
+                dispose();
+
+                new Login().setVisible(true);
+
+            }
+
+        });
+
+        // Primera organización
         resizeComponents();
-    }
 
-    
+        // Hace el panel responsive
+        addComponentListener(new ComponentAdapter() {
+
+            @Override
+            public void componentResized(ComponentEvent e) {
+
+                resizeComponents();
+
+            }
+
+        });
+
+    }    //================ RESPONSIVE =================
+
     private void resizeComponents() {
 
         int w = getWidth();
         int h = getHeight();
 
-        // HEADER
+        // Header
         panelCoordinador.setBounds(0, 0, w, 70);
-        arrow.setBounds(30, 5, 50, 50);
-        lblCoordinador.setBounds(100, 0, w, 70);
 
-        // CONTENIDO CENTRADO
-        titulo.setBounds(w / 2 - 150, h / 2 - 200, 500, 70);
-        nombreCoordinador.setBounds(w / 2 - 150, h / 2 - 100, 600, 40);
-        program.setBounds(w / 2 - 150, h / 2 - 40, 600, 40);
+        arrow.setBounds(20, 10, 50, 50);
 
-        // EXIT (arriba derecha responsive)
-        btnExit.setBounds(w - 260, 120, 240, 70);
+        lblCoordinador.setBounds(
+                (w - 250) / 2,
+                18,
+                250,
+                30
+        );
 
-        if (btnFichas != null)
-        btnFichas.setBounds(w / 4 - 120, h - 180, 240, 70);
+        // Información
+        titulo.setBounds(
+                (w - 300) / 2,
+                120,
+                300,
+                60
+        );
 
-        if (btnInstr != null)
-            btnInstr.setBounds(w / 2 - 120, h - 180, 240, 70);
+        nombreCoordinador.setBounds(
+                (w - 600) / 2,
+                210,
+                600,
+                40
+        );
 
-        if (btnAprendices != null)
-            btnAprendices.setBounds((w * 3 / 4) - 120, h - 180, 240, 70);
+        program.setBounds(
+                (w - 600) / 2,
+                260,
+                600,
+                40
+        );
 
-        if (btnExit != null)
-            btnExit.setBounds(w - 260, 120, 240, 70);
+        // Botón cerrar sesión
+        btnExit.setBounds(
+                w - 250,
+                90,
+                200,
+                55
+        );
+
+        // Botones inferiores
+        int ancho = 230;
+        int alto = 65;
+        int separacion = 40;
+
+        int total =
+                (ancho * 3) + (separacion * 2);
+
+        int inicioX = (w - total) / 2;
+
+        int y = h - 150;
+
+        btnFichas.setBounds(
+                inicioX,
+                y,
+                ancho,
+                alto
+        );
+
+        btnInstr.setBounds(
+                inicioX + ancho + separacion,
+                y,
+                ancho,
+                alto
+        );
+
+        btnAprendices.setBounds(
+                inicioX + (ancho + separacion) * 2,
+                y,
+                ancho,
+                alto
+        );
+
     }
 
-    // ================= BUTTON STYLE =================
+    //================ ESTILO BOTONES =================
+
     private void styleButton(JButton btn) {
+
         btn.setFont(new Font("Arial", Font.BOLD, 20));
-        btn.setBackground(new Color(0, 180, 0));
+        btn.setBackground(new Color(0,180,0));
         btn.setForeground(Color.WHITE);
         btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+
     }
+
+    //================ MAIN =================
 
     public static void main(String[] args) {
 
-        new Vista.coordinador.PanelCoordinador(
-                "Ana Torres",
-                "Coordinación Académica"
-        ).setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+
+            new PanelCoordinador(
+                    "Ana Torres",
+                    "Coordinación Académica"
+            ).setVisible(true);
+
+        });
+
     }
+
 }

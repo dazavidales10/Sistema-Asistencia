@@ -17,10 +17,13 @@ public class PanelAprendiz extends JFrame {
     private JLabel lblAsistencia;
     private JLabel lblFaltas;
     private JLabel lblTardanzas;
+    private int idUsuario;
+    private int idAprendiz = -1;
 
     public PanelAprendiz(int idUsuario,
                          String nombre,
                          String ficha) {
+        this.idUsuario = idUsuario;
 
         setTitle("Panel Aprendiz");
         setSize(1200, 700);
@@ -124,7 +127,7 @@ public class PanelAprendiz extends JFrame {
 
 // Evento del botón Enviar Excusa
         btnExcusa.addActionListener(e -> {
-        new enviarExcusa(idUsuario).setVisible(true);
+        new EnviarExcusa(idUsuario).setVisible(true);
         });
 
         JButton[] botones = {
@@ -150,12 +153,47 @@ public class PanelAprendiz extends JFrame {
 
         btnConsultar.addActionListener(e -> {
 
-            new consultarAsistencia(idUsuario).setVisible(true);
+        System.out.println("Botón Consultar");
+        System.out.println("idAprendiz = " + idAprendiz);
+
+        try{
+
+                ConsultarAsistencia c = new ConsultarAsistencia(idAprendiz);
+
+                System.out.println("Objeto creado");
+
+                c.setVisible(true);
+
+                System.out.println("Ventana abierta");
+
+        }catch(Exception ex){
+
+                ex.printStackTrace();
+
+        }
 
         });
+                
         btnHistorial.addActionListener(e -> {
 
-            new historialAsistencia(idUsuario).setVisible(true);
+        System.out.println("Botón Historial");
+        System.out.println("idAprendiz = " + idAprendiz);
+
+        try {
+
+                HistorialAsistencia h = new HistorialAsistencia(idAprendiz);
+
+                System.out.println("Objeto creado");
+
+                h.setVisible(true);
+
+                System.out.println("Ventana abierta");
+
+        } catch (Exception ex) {
+
+                ex.printStackTrace();
+
+        }
 
         });
 
@@ -187,12 +225,14 @@ public class PanelAprendiz extends JFrame {
 
             String sql = """
                     SELECT
-                    a.programa,
-                    a.numeroFicha,
-                    a.idAprendiz
-                    FROM aprendiz a
-                    WHERE a.id = ?
-                    """;
+                        a.idAprendiz,
+                        a.programa,
+                        a.numeroFicha
+                        FROM usuarios u
+                        INNER JOIN aprendiz a
+                        ON u.identificacion = a.documento
+                        WHERE u.id = ?
+                        """;
 
             PreparedStatement ps =
                     con.prepareStatement(sql);
@@ -214,8 +254,9 @@ public class PanelAprendiz extends JFrame {
                                 + rs.getString("numeroFicha")
                 );
 
-                int idAprendiz =
-                        rs.getInt("idAprendiz");
+                idAprendiz = rs.getInt("idAprendiz");
+
+                System.out.println("ID Aprendiz: " + idAprendiz);
 
                 cargarAsistencias(idAprendiz);
             }
@@ -232,66 +273,66 @@ public class PanelAprendiz extends JFrame {
 
         try {
 
-            Connection con = Conexion.conectar();
+                Connection con = Conexion.conectar();
 
-            String sql = """
-                    SELECT
-                    SUM(CASE WHEN estado='Presente'
-                    THEN 1 ELSE 0 END) AS presentes,
+                String sql = """
+                SELECT
 
-                    SUM(CASE WHEN estado='Falta'
-                    THEN 1 ELSE 0 END) AS faltas,
+                        SUM(CASE
+                                WHEN estado='ASISTIO'
+                                THEN 1
+                                ELSE 0
+                        END) AS presentes,
 
-                    SUM(CASE WHEN estado='Tarde'
-                    THEN 1 ELSE 0 END) AS tardanzas
+                        SUM(CASE
+                                WHEN estado='FALTA'
+                                THEN 1
+                                ELSE 0
+                        END) AS faltas,
 
-                    FROM asistencia
-                    WHERE idAprendiz = ?
-                    """;
+                        SUM(CASE
+                                WHEN estado='TARDE'
+                                THEN 1
+                                ELSE 0
+                        END) AS tardanzas
 
-            PreparedStatement ps =
-                    con.prepareStatement(sql);
+                FROM asistencia
+                WHERE idAprendiz=?
+                """;
 
-            ps.setInt(1, idAprendiz);
+                PreparedStatement ps = con.prepareStatement(sql);
 
-            ResultSet rs =
-                    ps.executeQuery();
+                ps.setInt(1, idAprendiz);
 
-            if (rs.next()) {
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
 
                 lblAsistencia.setText(
-                        "Asistencias: "
-                                + rs.getInt("presentes")
+                        "Asistencias: " + rs.getInt("presentes")
                 );
 
                 lblFaltas.setText(
-                        "Faltas: "
-                                + rs.getInt("faltas")
+                        "Faltas: " + rs.getInt("faltas")
                 );
 
                 lblTardanzas.setText(
-                        "Tardanzas: "
-                                + rs.getInt("tardanzas")
+                        "Tardanzas: " + rs.getInt("tardanzas")
                 );
-            }
+
+                }
+
+                rs.close();
+                ps.close();
+                con.close();
 
         } catch (Exception e) {
 
-            e.printStackTrace();
+                e.printStackTrace();
+
         }
-    }
 
-    public static void main(String[] args) {
-
-        SwingUtilities.invokeLater(() -> {
-
-            new PanelAprendiz(
-                    1,
-                    "Carlos Pérez",
-                    "3364343"
-            ).setVisible(true);
-
-        });
-    }
+ }
 }
+
  

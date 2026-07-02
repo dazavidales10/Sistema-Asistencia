@@ -18,11 +18,25 @@ public class gestionFichas extends JFrame {
 
     private JTable tablaFichas;
     private DefaultTableModel modeloTabla;
+    private JTextField txtBuscarFicha;
 
     private String nombreCoordinador;
     private String areaCoordinador;
 
-    private JTextField txtBuscarFicha;
+    private JPanel panel;
+
+        private JLabel arrow;
+        private JLabel titulo;
+        private JLabel header;
+        private JLabel lblBuscar;
+
+        private JButton btnBuscar;
+        private JButton btnAgregar;
+        private JButton btnEditar;
+        private JButton btnEliminar;
+        private JButton btnExportar;
+
+        private JScrollPane scrollTabla;
 
     public gestionFichas(
             String nombreCoordinador,
@@ -32,11 +46,12 @@ public class gestionFichas extends JFrame {
         this.areaCoordinador = areaCoordinador;
 
         setTitle("Gestión Fichas");
-        setSize(1920, 1080);
+        setSize(1200,700);
+        setMinimumSize(new Dimension(1000,650));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JPanel panel = new JPanel();
+       panel = new JPanel();
         panel.setLayout(null);
         panel.setBackground(Color.WHITE);
 
@@ -44,7 +59,7 @@ public class gestionFichas extends JFrame {
 
         // ================= HEADER =================
 
-        JLabel arrow = new JLabel("←");
+        arrow = new JLabel("←");
         arrow.setBounds(30, 5, 50, 50);
         arrow.setFont(new Font("Arial", Font.BOLD, 40));
         arrow.setForeground(Color.WHITE);
@@ -66,15 +81,16 @@ public class gestionFichas extends JFrame {
             }
         });
 
-        JLabel titulo = new JLabel("Gestión Fichas");
+        titulo = new JLabel("Gestión Fichas");
 
         titulo.setForeground(Color.WHITE);
         titulo.setFont(new Font("Arial", Font.BOLD, 20));
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
         titulo.setBounds(100, 0, 500, 70);
 
         panel.add(titulo);
 
-        JLabel header = new JLabel();
+        header = new JLabel();
 
         header.setOpaque(true);
         header.setBackground(new Color(0, 180, 0));
@@ -84,7 +100,7 @@ public class gestionFichas extends JFrame {
 
         // ================= BUSCADOR =================
 
-        JLabel lblBuscar = new JLabel("Buscar");
+        lblBuscar = new JLabel("Buscar");
 
         lblBuscar.setFont(new Font("Arial", Font.BOLD, 20));
         lblBuscar.setBounds(450, 150, 150, 40);
@@ -97,7 +113,7 @@ public class gestionFichas extends JFrame {
 
         panel.add(txtBuscarFicha);
 
-        JButton btnBuscar = new JButton("Buscar");
+        btnBuscar = new JButton("Buscar");
 
         btnBuscar.setBounds(1260, 150, 180, 40);
         btnBuscar.setFont(new Font("Arial", Font.BOLD, 20));
@@ -109,16 +125,16 @@ public class gestionFichas extends JFrame {
 
         // ================= BOTONES =================
 
-        JButton btnAgregar = new JButton("Agregar");
+        btnAgregar = new JButton("Agregar");
         btnAgregar.setBounds(260, 260, 240, 70);
 
-        JButton btnEditar = new JButton("Editar");
+        btnEditar = new JButton("Editar");
         btnEditar.setBounds(660, 260, 240, 70);
 
-        JButton btnEliminar = new JButton("Eliminar");
+        btnEliminar = new JButton("Eliminar");
         btnEliminar.setBounds(1060, 260, 240, 70);
 
-        JButton btnExportar = new JButton("Exportar");
+        btnExportar = new JButton("Exportar");
         btnExportar.setBounds(1460, 260, 240, 70);
 
         JButton[] botones = {
@@ -150,22 +166,19 @@ public class gestionFichas extends JFrame {
 
         modeloTabla = new DefaultTableModel(columnas, 0) {
 
-            @Override
-            public Class<?> getColumnClass(int column) {
+        @Override
+        public Class<?> getColumnClass(int column) {
+                return column == 3 ? Boolean.class : String.class;
+        }
 
-                return column == 3
-                        ? Boolean.class
-                        : String.class;
-            }
-
-            @Override
-            public boolean isCellEditable(int row, int column) {
-
+        @Override
+        public boolean isCellEditable(int row, int column) {
                 return column == 3;
-            }
+        }
         };
 
         tablaFichas = new JTable(modeloTabla);
+        tablaFichas.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         tablaFichas.setRowHeight(50);
         tablaFichas.setFont(new Font("Arial", Font.BOLD, 18));
@@ -213,7 +226,7 @@ public class gestionFichas extends JFrame {
                 .getColumn(3)
                 .setPreferredWidth(150);
 
-        JScrollPane scrollTabla =
+        scrollTabla =
                 new JScrollPane(tablaFichas);
 
         scrollTabla.setBounds(35, 350, 1840, 600);
@@ -522,11 +535,123 @@ public class gestionFichas extends JFrame {
 
             buscarFicha(numeroFicha);
         });
+
+         resizeComponents();
+
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+
+        @Override
+        public void componentResized(java.awt.event.ComponentEvent e) {
+
+                resizeComponents();
+
+        }
+
+        });
     }
 
+    private void resizeComponents() {
+
+        int w = getWidth();
+        int h = getHeight();
+
+        //================ HEADER =================
+
+        header.setBounds(0, 0, w, 70);
+
+        arrow.setBounds(20, 10, 50, 50);
+
+        titulo.setBounds(
+                (w - 250) / 2,
+                0,
+                250,
+                70
+        );
+
+        //================ BUSCADOR =================
+
+        int buscadorY = 120;
+
+        lblBuscar.setBounds(
+                w / 2 - 420,
+                buscadorY,
+                120,
+                40
+        );
+
+        txtBuscarFicha.setBounds(
+                w / 2 - 280,
+                buscadorY,
+                500,
+                40
+        );
+
+        btnBuscar.setBounds(
+                w / 2 + 250,
+                buscadorY,
+                160,
+                40
+        );
+
+        //================ BOTONES =================
+
+        int ancho = 220;
+        int alto = 65;
+        int espacio = 35;
+
+        int total = (ancho * 4) + (espacio * 3);
+
+        int inicio = (w - total) / 2;
+
+        int yBotones = 210;
+
+        btnAgregar.setBounds(
+                inicio,
+                yBotones,
+                ancho,
+                alto
+        );
+
+        btnEditar.setBounds(
+                inicio + ancho + espacio,
+                yBotones,
+                ancho,
+                alto
+        );
+
+        btnEliminar.setBounds(
+                inicio + (ancho + espacio) * 2,
+                yBotones,
+                ancho,
+                alto
+        );
+
+        btnExportar.setBounds(
+                inicio + (ancho + espacio) * 3,
+                yBotones,
+                ancho,
+                alto
+        );
+
+        //================ TABLA =================
+
+        scrollTabla.setBounds(
+                30,
+                320,
+                w - 60,
+                h - 400
+        );
+
+        setLocationRelativeTo(null);
+
+
+        }
+        
     // ================= CARGAR FICHAS =================
 
     private void cargarFichas() {
+
+        
 
         modeloTabla.setRowCount(0);
 

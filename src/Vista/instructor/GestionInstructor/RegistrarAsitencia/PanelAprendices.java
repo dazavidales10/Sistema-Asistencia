@@ -293,29 +293,29 @@ public class PanelAprendices extends JFrame {
                 modelo.setRowCount(0);
 
                 String sql = """
-                        SELECT
-                        a.idAprendiz,
-                        u.identificacion,
-                        u.nombre,
-                        a.telefono,
-                        a.programa,
-                        asi.estado
-                        FROM clase_aprendiz ca
+                SELECT
+                a.idAprendiz,
+                u.identificacion,
+                u.nombre,
+                a.telefono,
+                a.programa,
+                asi.estado
+                FROM clase_aprendiz ca
 
-                        INNER JOIN aprendiz a
-                        ON ca.idAprendiz=a.idAprendiz
+                INNER JOIN aprendiz a
+                ON ca.idAprendiz=a.idAprendiz
 
-                        INNER JOIN usuarios u
-                        ON a.documento=u.identificacion
+                INNER JOIN usuarios u
+                ON a.documento=u.identificacion
 
-                        LEFT JOIN asistencia asi
-                        ON asi.idClase=ca.idClase
-                        AND asi.idAprendiz=ca.idAprendiz
+                LEFT JOIN asistencia asi
+                ON asi.idClase=ca.idClase
+                AND asi.idAprendiz=ca.idAprendiz
 
-                        WHERE ca.idClase=?
+                WHERE ca.idClase=?
 
-                        ORDER BY u.nombre
-                        """;
+                ORDER BY u.nombre
+                """;
 
                 try (Connection cn = Conexion.conectar();
                         PreparedStatement ps = cn.prepareStatement(sql)) {
@@ -348,9 +348,11 @@ public class PanelAprendices extends JFrame {
 
                 } catch (Exception ex) {
 
+                        ex.printStackTrace();
+
                         JOptionPane.showMessageDialog(
                                 this,
-                                ex.getMessage()
+                                "Error en cargarAprendices:\n" + ex.getMessage()
                         );
 
                 }
@@ -364,42 +366,58 @@ public class PanelAprendices extends JFrame {
                 modelo.setRowCount(0);
 
                 String sql = """
-                        SELECT
-                                u.identificacion,
-                                u.nombre,
-                                a.telefono,
-                                a.programa
-                        FROM aprendiz a
-                        INNER JOIN usuarios u
-                                ON a.documento=u.identificacion
-                        WHERE a.idInstructor=?
-                        AND a.numeroFicha=?
-                        AND (
-                                u.nombre LIKE ?
-                                OR u.identificacion LIKE ?
-                                )
-                        AND u.rol='Aprendiz'
-                        ORDER BY u.nombre
-                        """;
+                SELECT
+                        u.identificacion,
+                        u.nombre,
+                        a.telefono,
+                        a.programa,
+                        asi.estado
+                FROM clase_aprendiz ca
+
+                INNER JOIN aprendiz a
+                        ON ca.idAprendiz = a.idAprendiz
+
+                INNER JOIN usuarios u
+                        ON a.documento = u.identificacion
+
+                LEFT JOIN asistencia asi
+                        ON asi.idClase = ca.idClase
+                        AND asi.idAprendiz = ca.idAprendiz
+
+                WHERE ca.idClase = ?
+                AND (
+                        u.nombre LIKE ?
+                        OR u.identificacion LIKE ?
+                )
+
+                ORDER BY u.nombre
+                """;
 
                 try (Connection cn = Conexion.conectar();
                         PreparedStatement ps = cn.prepareStatement(sql)) {
 
-                        ps.setInt(1, idInstructor);
-                        ps.setString(2, ficha);
-
+                        ps.setInt(1, idClase);
+                        ps.setString(2, "%" + txtBuscar.getText().trim() + "%");
                         ps.setString(3, "%" + txtBuscar.getText().trim() + "%");
-                        ps.setString(4, "%" + txtBuscar.getText().trim() + "%");
 
                         ResultSet rs = ps.executeQuery();
 
                         while (rs.next()) {
 
+                        String estado = rs.getString("estado");
+
+                        if (estado == null) {
+                                estado = "SIN REGISTRAR";
+                        }
+
                         modelo.addRow(new Object[]{
+
                                 rs.getString("identificacion"),
                                 rs.getString("nombre"),
                                 rs.getString("telefono"),
-                                rs.getString("programa")
+                                rs.getString("programa"),
+                                estado
+
                         });
 
                         }
@@ -408,26 +426,25 @@ public class PanelAprendices extends JFrame {
 
                 } catch (Exception ex) {
 
-                        JOptionPane.showMessageDialog(
-                                this,
-                                ex.getMessage()
-                        );
+                        ex.printStackTrace();
+
+                        JOptionPane.showMessageDialog(this, ex.getMessage());
 
                 }
 
-        }
-        private void limpiarSeleccion() {
+                }
+        private void limpiarSeleccion(){
 
-                documentoSeleccionado = "";
+        idAprendizSeleccionado = -1;
+        documentoSeleccionado = "";
 
-                lblDocumento.setText("-");
-                lblNombre.setText("-");
-                lblTelefono.setText("-");
-                lblPrograma.setText("-");
+        lblDocumento.setText("-");
+        lblNombre.setText("-");
+        lblTelefono.setText("-");
+        lblPrograma.setText("-");
 
-                btnAsistencia.setEnabled(false);
-                btnEditar.setEnabled(false);
-
+        btnAsistencia.setEnabled(false);
+        btnEditar.setEnabled(false);
         }
 
         private int obtenerIdAprendiz(String documento) {

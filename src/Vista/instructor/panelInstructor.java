@@ -4,13 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 
 import Vista.instructor.GestionInstructor.RegistrarAsitencia.seleccionarFicha;
+import Vista.instructor.GestionInstructor.VerAprendices.seleccionarFichaVer;
 
-public class panelInstructor extends JFrame {
+public class PanelInstructor extends JFrame {
 
     private int idInstructor;
     private String numeroFicha;
 
-    public panelInstructor(
+    public PanelInstructor(
             int idInstructor,
             String nombre,
             String especialidad,
@@ -122,12 +123,25 @@ public class panelInstructor extends JFrame {
             dispose();
 
         });
+        btnAprendices.addActionListener(e -> {
 
-        btnExcusa.addActionListener(e -> {
+            new seleccionarFichaVer(
+                    idInstructor,
+                    nombre,
+                    especialidad
+            ).setVisible(true);
 
-            new gestionarExcusas(numeroFicha).setVisible(true);
+            dispose();
 
         });
+
+       btnExcusa.addActionListener(e -> {
+
+    System.out.println("Ficha enviada a gestionarExcusas: " + numeroFicha);
+
+    new gestionarExcusas(numeroFicha).setVisible(true);
+
+});
 
         btnCerrar.addActionListener(e -> {
 
@@ -143,7 +157,7 @@ public class panelInstructor extends JFrame {
 
         SwingUtilities.invokeLater(() -> {
 
-            new panelInstructor(
+            new PanelInstructor(
                     5,
                     "María Gómez",
                     "Análisis y Desarrollo de Software",

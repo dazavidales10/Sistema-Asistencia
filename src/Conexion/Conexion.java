@@ -2,33 +2,25 @@ package Conexion;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Conexion {
 
-    private static final String URL =
-            "jdbc:mysql://localhost:3306/sistemaasistencia";
-
+    private static final String URL = "jdbc:mysql://localhost:3306/sistemaasistencia2";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
     public static Connection conectar() {
 
-        Connection con = null;
-
         try {
+            return DriverManager.getConnection(URL, USER, PASSWORD);
 
-            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (SQLException e) {
 
-            con = DriverManager.getConnection(URL, USER, PASSWORD);
-
-            System.out.println("Conexión exitosa");
-
-        } catch (Exception e) {
-
-            System.out.println("Error de conexión");
+            System.err.println("Error al conectar con la base de datos.");
             e.printStackTrace();
-        }
 
-        return con;
+            return null;
+        }
     }
 }

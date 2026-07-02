@@ -3,26 +3,29 @@ package Modelo;
 public class Usuario {
 
     private int id;
+    private String nombre;
     private String identificacion;
     private String tipoDocumento;
-    private String rol;
     private String password;
-    private String nombre;
+    private String rol;
 
-    
     public Usuario() {
     }
 
-    
-    public Usuario(int id,String identificacion,String tipoDocumento,String rol,String password,String nombre) {
+    public Usuario(int id,
+                   String nombre,
+                   String identificacion,
+                   String tipoDocumento,
+                   String password,
+                   String rol) {
+
         this.id = id;
+        this.nombre = nombre;
         this.identificacion = identificacion;
         this.tipoDocumento = tipoDocumento;
-        this.rol = rol;
         this.password = password;
-        this.nombre = nombre;
+        this.rol = rol;
     }
-
 
     public int getId() {
         return id;
@@ -70,5 +73,10 @@ public class Usuario {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

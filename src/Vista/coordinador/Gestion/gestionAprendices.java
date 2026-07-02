@@ -11,8 +11,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import java.awt.Dimension;
 import Conexion.Conexion;
-import Vista.coordinador.Dialogs.dialogAprendiz;
+import Vista.coordinador.Dialogs.DialogAprendiz;
 import Vista.coordinador.PanelCoordinador;
 
 public class gestionAprendices extends JFrame {
@@ -24,6 +25,20 @@ public class gestionAprendices extends JFrame {
     private String areaCoordinador;
 
     private JTextField txtNumeroFicha;
+    private JPanel panel;
+
+private JLabel arrow;
+private JLabel titulo;
+private JLabel header;
+private JLabel lblBuscar;
+
+private JButton btnBuscar;
+private JButton btnAgregar;
+private JButton btnEditar;
+private JButton btnEliminar;
+private JButton btnExportar;
+
+private JScrollPane scroll;
 
     public gestionAprendices(
             String nombreCoordinador,
@@ -33,17 +48,19 @@ public class gestionAprendices extends JFrame {
         this.areaCoordinador = areaCoordinador;
 
         setTitle("Gestión Aprendices");
-        setSize(1920,1080);
+
+        setSize(1200,700);
+        setMinimumSize(new Dimension(1000,650));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JPanel panel = new JPanel(null);
+        panel = new JPanel(null);
         panel.setBackground(Color.WHITE);
         setContentPane(panel);
 
         //================ HEADER =================
 
-        JLabel arrow = new JLabel("←");
+        arrow = new JLabel("←");
         arrow.setBounds(30,5,50,50);
         arrow.setFont(new Font("Arial",Font.BOLD,40));
         arrow.setForeground(Color.WHITE);
@@ -67,14 +84,15 @@ public class gestionAprendices extends JFrame {
 
         panel.add(arrow);
 
-        JLabel titulo = new JLabel("Gestión Aprendices");
+        titulo = new JLabel("Gestión Aprendices");
         titulo.setBounds(100,0,500,70);
         titulo.setForeground(Color.WHITE);
         titulo.setFont(new Font("Arial",Font.BOLD,22));
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
 
         panel.add(titulo);
 
-        JLabel header = new JLabel();
+        header = new JLabel();
         header.setOpaque(true);
         header.setBackground(new Color(0,180,0));
         header.setBounds(0,0,1920,70);
@@ -83,7 +101,7 @@ public class gestionAprendices extends JFrame {
 
         //================ BUSCADOR =================
 
-        JLabel lblBuscar = new JLabel("Número de ficha");
+        lblBuscar = new JLabel("Número de ficha");
 
         lblBuscar.setBounds(420,150,180,35);
         lblBuscar.setFont(new Font("Arial",Font.BOLD,20));
@@ -96,17 +114,17 @@ public class gestionAprendices extends JFrame {
 
         panel.add(txtNumeroFicha);
 
-        JButton btnBuscar = new JButton("Buscar");
+        btnBuscar = new JButton("Buscar");
         btnBuscar.setBounds(1160,150,180,40);
 
         panel.add(btnBuscar);
 
         //================ BOTONES =================
 
-        JButton btnAgregar = new JButton("Agregar");
-        JButton btnEditar = new JButton("Editar");
-        JButton btnEliminar = new JButton("Eliminar");
-        JButton btnExportar = new JButton("Exportar");
+        btnAgregar = new JButton("Agregar");
+        btnEditar = new JButton("Editar");
+        btnEliminar = new JButton("Eliminar");
+        btnExportar = new JButton("Exportar");
 
         btnAgregar.setBounds(260,260,240,70);
         btnEditar.setBounds(660,260,240,70);
@@ -167,7 +185,7 @@ public class gestionAprendices extends JFrame {
         };
 
         tablaAprendices = new JTable(modeloTabla);
-
+        tablaAprendices.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         tablaAprendices.setRowHeight(45);
         tablaAprendices.setFont(new Font("Arial",Font.PLAIN,18));
 
@@ -185,7 +203,7 @@ public class gestionAprendices extends JFrame {
 
         }
 
-        JScrollPane scroll =
+        scroll =
                 new JScrollPane(tablaAprendices);
 
         scroll.setBounds(35,350,1840,600);
@@ -198,8 +216,8 @@ public class gestionAprendices extends JFrame {
 
         btnAgregar.addActionListener(e -> {
 
-            dialogAprendiz dialog =
-                    new dialogAprendiz(this);
+            DialogAprendiz dialog =
+                    new DialogAprendiz(this);
 
             dialog.setVisible(true);
 
@@ -213,6 +231,22 @@ public class gestionAprendices extends JFrame {
 
         btnBuscar.addActionListener(e -> buscarPorFicha());
 
+       
+
+            resizeComponents();
+
+            addComponentListener(new java.awt.event.ComponentAdapter() {
+
+                @Override
+                public void componentResized(java.awt.event.ComponentEvent e) {
+
+                    resizeComponents();
+
+                }
+
+            });
+            
+    setLocationRelativeTo(null);
     }
 
         private void cargarAprendices() {
@@ -345,7 +379,7 @@ public class gestionAprendices extends JFrame {
         String telefono = modeloTabla.getValueAt(fila, 3).toString();
         String ficha = modeloTabla.getValueAt(fila, 4).toString();
 
-        dialogAprendiz dialog = new dialogAprendiz(
+        DialogAprendiz dialog = new DialogAprendiz(
                 this,
                 documento,
                 nombre,
@@ -464,6 +498,101 @@ public class gestionAprendices extends JFrame {
             );
         }
     }
+
+    private void resizeComponents() {
+
+    int w = getWidth();
+    int h = getHeight();
+
+    //================ HEADER =================
+
+    header.setBounds(0, 0, w, 70);
+
+    arrow.setBounds(20, 10, 50, 50);
+
+    titulo.setBounds(
+            (w - 300) / 2,
+            0,
+            300,
+            70
+    );
+
+    //================ BUSCADOR =================
+
+    int buscadorY = 120;
+
+    lblBuscar.setBounds(
+            w / 2 - 420,
+            buscadorY,
+            180,
+            40
+    );
+
+    txtNumeroFicha.setBounds(
+            w / 2 - 220,
+            buscadorY,
+            450,
+            40
+    );
+
+    btnBuscar.setBounds(
+            w / 2 + 260,
+            buscadorY,
+            160,
+            40
+    );
+
+    //================ BOTONES =================
+
+    int ancho = 220;
+    int alto = 65;
+    int espacio = 35;
+
+    int total = (ancho * 4) + (espacio * 3);
+
+    int inicio = (w - total) / 2;
+
+    int yBotones = 210;
+
+    btnAgregar.setBounds(
+            inicio,
+            yBotones,
+            ancho,
+            alto
+    );
+
+    btnEditar.setBounds(
+            inicio + ancho + espacio,
+            yBotones,
+            ancho,
+            alto
+    );
+
+    btnEliminar.setBounds(
+            inicio + (ancho + espacio) * 2,
+            yBotones,
+            ancho,
+            alto
+    );
+
+    btnExportar.setBounds(
+            inicio + (ancho + espacio) * 3,
+            yBotones,
+            ancho,
+            alto
+    );
+
+    //================ TABLA =================
+
+    scroll.setBounds(
+            30,
+            320,
+            w - 60,
+            h - 400
+    );
+
+}
+    
 
     private int obtenerFilaSeleccionada() {
 

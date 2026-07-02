@@ -9,9 +9,6 @@ import javax.swing.*;
 import Conexion.Conexion;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 //Recordar iniciar sesion 
 import java.util.prefs.Preferences;
 
@@ -21,6 +18,9 @@ public class Login extends JFrame {
     private JTextField txtId;
     private JComboBox<String> cbTipo;
     private JComboBox<String> cbRol;
+    private JButton btnMostrar;
+    private boolean mostrarPassword = false;
+    private char echoChar;
 
     private Preferences prefs = Preferences.userNodeForPackage(Login.class);
 
@@ -65,7 +65,7 @@ public class Login extends JFrame {
 
                     } else if (rol.equals("Instructor")) {
 
-                        new Vista.instructor.panelInstructor(
+                        new Vista.instructor.PanelInstructor(
                             rs.getInt("id"),
                             rs.getString("nombre"),
                             rs.getString("especialidad"),
@@ -152,8 +152,46 @@ public class Login extends JFrame {
         panel.add(lblPass);
 
         txtPass = new JPasswordField();
-        txtPass.setBounds(170, 150, 200, 25);
-        panel.add(txtPass);
+            txtPass.setBounds(170, 150, 170, 25);
+
+            echoChar = txtPass.getEchoChar();
+
+            panel.add(txtPass);
+
+            // Botón mostrar contraseña
+            ImageIcon iconoCerrado = new ImageIcon(getClass().getResource("/imagenes/ojo_cerrado.png"));
+            Image imagenCerrada = iconoCerrado.getImage().getScaledInstance(21,13, Image.SCALE_SMOOTH);
+            ImageIcon ojoCerrado = new ImageIcon(imagenCerrada);
+
+            ImageIcon iconoAbierto = new ImageIcon(getClass().getResource("/imagenes/ojo_abierto.png"));
+            Image imagenAbierta = iconoAbierto.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            ImageIcon ojoAbierto = new ImageIcon(imagenAbierta);
+
+            btnMostrar = new JButton(ojoCerrado);
+            btnMostrar.setBounds(345, 150, 30, 25);
+            btnMostrar.setBorderPainted(false);
+            btnMostrar.setContentAreaFilled(false);
+            btnMostrar.setFocusPainted(false);
+            btnMostrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+            btnMostrar.addActionListener(e -> {
+
+                if (mostrarPassword) {
+
+                    txtPass.setEchoChar(echoChar);
+                    btnMostrar.setIcon(ojoCerrado);
+                    mostrarPassword = false;
+
+                } else {
+
+                    txtPass.setEchoChar((char) 0);
+                    btnMostrar.setIcon(ojoAbierto);
+                    mostrarPassword = true;
+                }
+
+            });
+
+            panel.add(btnMostrar);
 
         JCheckBox chkRecordar = new JCheckBox("Recordar sesión");
         chkRecordar.setBounds(170, 180, 150, 25);
@@ -182,7 +220,7 @@ public class Login extends JFrame {
                     "i.numeroFicha AS fichaInstructor " +
                     "FROM usuarios u " +
 
-                    "LEFT JOIN aprendiz a ON u.id=a.id " +
+                    "LEFT JOIN aprendiz a ON u.identificacion = a.documento " +
                     "LEFT JOIN coordinador c ON u.id=c.id " +
                     "LEFT JOIN instructor i ON u.id=i.id " +
                     "WHERE u.identificacion=? " +
@@ -191,7 +229,7 @@ public class Login extends JFrame {
                     "AND u.password=?";
 
 
-
+                    System.out.println(sql);
                 PreparedStatement ps = con.prepareStatement(sql);
 
                 ps.setString(1, identificacion);
@@ -211,6 +249,12 @@ public class Login extends JFrame {
 
                         prefs.remove("idUsuario");
                     }
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "¡Bienvenido, " + rs.getString("nombre") + "!",
+                        "Inicio de sesión",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
 
                     if (rol.equals("Aprendiz")) {
 
@@ -227,7 +271,7 @@ public class Login extends JFrame {
                 System.out.println("Especialidad BD: " + rs.getString("especialidad"));
                 System.out.println("Ficha BD: " + rs.getString("fichaInstructor"));
                 System.out.println("===========================");
-                        new Vista.instructor.panelInstructor(
+                        new Vista.instructor.PanelInstructor(
                             rs.getInt("id"),
                             rs.getString("nombre"),
                             rs.getString("especialidad"),

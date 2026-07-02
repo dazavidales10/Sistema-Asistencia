@@ -9,7 +9,7 @@ import javax.swing.*;
 
 import Conexion.Conexion;
 
-public class dialogFicha extends JDialog {
+public class DialogFicha extends JDialog {
 
     private JTextField txtNumeroFicha;
     private JTextField txtPrograma;
@@ -20,7 +20,7 @@ public class dialogFicha extends JDialog {
 
     // ================= AGREGAR =================
 
-    public dialogFicha(JFrame parent) {
+    public DialogFicha(JFrame parent) {
 
         super(parent, "Agregar Ficha", true);
 
@@ -37,7 +37,7 @@ public class dialogFicha extends JDialog {
 
         // Editar
 
-    public dialogFicha(
+    public DialogFicha(
             JFrame parent,
             String numeroFicha,
             String programa,

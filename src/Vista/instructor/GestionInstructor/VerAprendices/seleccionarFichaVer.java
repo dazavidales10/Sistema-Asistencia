@@ -1,7 +1,7 @@
 package Vista.instructor.GestionInstructor.VerAprendices;
 
 import Conexion.Conexion;
-import Vista.instructor.panelInstructor;
+import Vista.instructor.PanelInstructor;
 import Vista.instructor.GestionInstructor.RegistrarAsitencia.PanelClases;
 
 import javax.swing.*;
@@ -74,7 +74,7 @@ public class seleccionarFichaVer extends JFrame {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent e){
 
-                        new panelInstructor(
+                        new PanelInstructor(
                                 idInstructor,
                                 nombre,
                                 especialidad,

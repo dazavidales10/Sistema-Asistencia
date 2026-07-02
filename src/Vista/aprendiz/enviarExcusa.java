@@ -12,7 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class enviarExcusa extends JFrame {
+public class EnviarExcusa extends JFrame {
 
     // COMPONENTES
     private JTextField txtAprendiz;
@@ -29,9 +29,9 @@ public class enviarExcusa extends JFrame {
     // VARIABLES
     private int idUsuario;
     private int idAprendiz;
-    private int idInstructor;
+    private int idClase;
 
-    public enviarExcusa(int idUsuario) {
+    public EnviarExcusa(int idUsuario) {
 
         this.idUsuario = idUsuario;
 
@@ -169,18 +169,30 @@ public class enviarExcusa extends JFrame {
             Connection con = Conexion.conectar();
 
             String sql = """
-                SELECT
-                    u.nombre,
-                    a.numeroFicha,
-                    a.idAprendiz,
-                    i.idInstructor,
-                    ui.nombre AS instructor
-                FROM usuarios u
-                INNER JOIN aprendiz a ON u.id = a.id
-                INNER JOIN instructor i ON i.numeroFicha = a.numeroFicha
-                INNER JOIN usuarios ui ON ui.id = i.id
-                WHERE u.id = ?
-                """;
+            SELECT
+                u.nombre,
+                a.numeroFicha,
+                a.idAprendiz,
+                c.idClase,
+                ui.nombre AS instructor
+            FROM usuarios u
+
+            INNER JOIN aprendiz a
+            ON u.identificacion = a.documento
+
+            INNER JOIN clase c
+            ON c.numeroFicha = a.numeroFicha
+
+            INNER JOIN instructor i
+            ON i.idInstructor = c.idInstructor
+
+            INNER JOIN usuarios ui
+            ON ui.id = i.id
+
+            WHERE u.id = ?
+            ORDER BY c.fecha DESC
+            LIMIT 1
+            """;
 
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, idUsuario);
@@ -194,7 +206,7 @@ public class enviarExcusa extends JFrame {
                 txtFicha.setText(rs.getString("numeroFicha"));
 
                 idAprendiz = rs.getInt("idAprendiz");
-                idInstructor = rs.getInt("idInstructor");
+                idClase = rs.getInt("idClase");
 
             }
 
@@ -283,25 +295,25 @@ private void guardarExcusa() {
             Connection con = Conexion.conectar();
 
             String sql = """
-                INSERT INTO excusa
-                (
-                    fechaEnvio,
-                    motivo,
-                    estado,
-                    archivo,
-                    idAprendiz,
-                    idInstructor
-                )
-                VALUES
-                (
-                    CURDATE(),
-                    ?,
-                    'Pendiente',
-                    ?,
-                    ?,
-                    ?
-                )
-                """;
+            INSERT INTO excusa
+            (
+                fechaSolicitud,
+                motivo,
+                estado,
+                archivo,
+                idAprendiz,
+                idClase
+            )
+            VALUES
+            (
+                CURDATE(),
+                ?,
+                'PENDIENTE',
+                ?,
+                ?,
+                ?
+            )
+            """;
 
             PreparedStatement ps = con.prepareStatement(sql);
 
@@ -311,7 +323,7 @@ private void guardarExcusa() {
 
             ps.setInt(3, idAprendiz);
 
-            ps.setInt(4, idInstructor);
+            ps.setInt(4, idClase);
 
             ps.executeUpdate();
 

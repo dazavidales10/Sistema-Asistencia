@@ -591,6 +591,6 @@ public class PanelVerAprendices extends JFrame {
                 }
 
                 return -1;
-        }
+        } 
 
 }

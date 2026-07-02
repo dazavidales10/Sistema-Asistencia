@@ -107,9 +107,9 @@ public class gestionarExcusas extends JFrame {
 
         cargarExcusas(ficha);
 
-        btnAceptar.addActionListener(e->actualizarEstado("Aprobada"));
+        btnAceptar.addActionListener(e -> actualizarEstado("ACEPTADA"));
 
-        btnRechazar.addActionListener(e->actualizarEstado("Rechazada"));
+        btnRechazar.addActionListener(e -> actualizarEstado("RECHAZADA"));
 
     }
 
@@ -129,32 +129,37 @@ public class gestionarExcusas extends JFrame {
         SELECT
             e.idExcusa,
             u.nombre,
-            e.fecha,
+            e.fechaSolicitud,
             e.motivo,
             e.archivo,
             e.estado
         FROM excusa e
+
         INNER JOIN aprendiz a
-            ON e.idAprendiz = a.idAprendiz
+        ON e.idAprendiz = a.idAprendiz
+
         INNER JOIN usuarios u
-            ON a.id = u.id
-        WHERE e.idInstructor = (
-            SELECT idInstructor
-            FROM instructor
-            WHERE numeroFicha = ?
-        )
+        ON a.documento = u.identificacion
+
+        INNER JOIN clase c
+        ON e.idClase = c.idClase
+
+        WHERE c.numeroFicha = ?
         """;
 
         PreparedStatement ps = con.prepareStatement(sql);
 
         ps.setString(1, ficha);
 
-        ResultSet rs = ps.executeQuery();
+        System.out.println("Consulta ejecutada con ficha: " + ficha);
 
-            int fila = 0;
+ResultSet rs = ps.executeQuery();
 
-        while (rs.next()) {
+int fila = 0;
 
+while (rs.next()) {
+
+    System.out.println("Excusa encontrada: " + rs.getInt("idExcusa"));
             String ruta = rs.getString("archivo");
 
             rutasPDF[fila] = ruta;
@@ -163,7 +168,7 @@ public class gestionarExcusas extends JFrame {
 
                     rs.getInt("idExcusa"),
                     rs.getString("nombre"),
-                    rs.getDate("fecha"),
+                    rs.getDate("fechaSolicitud"),
                     rs.getString("motivo"),
                     new File(ruta).getName(),
                     rs.getString("estado")
@@ -172,6 +177,7 @@ public class gestionarExcusas extends JFrame {
 
             fila++;
         }
+        System.out.println("Total de excusas: " + fila);
 
         rs.close();
         ps.close();
@@ -184,6 +190,7 @@ public class gestionarExcusas extends JFrame {
     }
 
 }
+
 
     private void actualizarEstado(String estado){
 

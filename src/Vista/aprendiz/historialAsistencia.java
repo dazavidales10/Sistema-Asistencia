@@ -10,12 +10,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class historialAsistencia extends JFrame {
+public class HistorialAsistencia extends JFrame {
 
     private JTable tabla;
     private DefaultTableModel modelo;
 
-    public historialAsistencia(int idAprendiz) {
+    public HistorialAsistencia(int idAprendiz) {
 
         setTitle("Historial de Asistencia");
         setSize(600, 500);
@@ -85,11 +85,13 @@ public class historialAsistencia extends JFrame {
             Connection con = Conexion.conectar();
 
             String sql = """
-                    SELECT fecha, estado
-                    FROM asistencia
-                    WHERE idAprendiz = ?
-                    ORDER BY fecha DESC
-                    """;
+                SELECT
+                    fechaRegistro,
+                    estado
+                FROM asistencia
+                WHERE idAprendiz = ?
+                ORDER BY fechaRegistro DESC
+                """;
 
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, idAprendiz);
@@ -100,16 +102,28 @@ public class historialAsistencia extends JFrame {
 
                 String estado = rs.getString("estado");
 
-                if (estado.equals("Presente")) {
-                    estado = "Asistió";
-                } else if (estado.equals("Falta")) {
-                    estado = "No asistió";
-                }
+                    switch (estado) {
+                        case "ASISTIO":
+                            estado = "Asistió";
+                            break;
 
-                modelo.addRow(new Object[]{
-                        rs.getDate("fecha"),
-                        estado
-                });
+                        case "TARDE":
+                            estado = "Llegó tarde";
+                            break;
+
+                        case "FALTA":
+                            estado = "No asistió";
+                            break;
+
+                        case "EXCUSA":
+                            estado = "Excusa";
+                            break;
+                    }
+
+                    modelo.addRow(new Object[]{
+                            rs.getDate("fechaRegistro"),
+                            estado
+                    });
             }
 
         } catch (Exception e) {

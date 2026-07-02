@@ -9,7 +9,7 @@ import javax.swing.*;
 
 import Conexion.Conexion;
 
-public class dialogAprendiz extends JDialog {
+public class DialogAprendiz extends JDialog {
 
     private JTextField txtDocumento;
     private JTextField txtNombre;
@@ -20,7 +20,7 @@ public class dialogAprendiz extends JDialog {
     private boolean modoEditar = false;
 
     // AGREGAR
-    public dialogAprendiz(JFrame parent) {
+    public DialogAprendiz(JFrame parent) {
 
         super(parent, "Agregar Aprendiz", true);
 
@@ -28,7 +28,7 @@ public class dialogAprendiz extends JDialog {
     }
 
     // EDITAR
-    public dialogAprendiz(
+    public DialogAprendiz(
             JFrame parent,
             String documento,
             String nombre,

@@ -14,7 +14,7 @@ import Conexion.Conexion;
 import java.awt.*;
 
 import Vista.coordinador.PanelCoordinador;
-import Vista.coordinador.Dialogs.dialogInstructor;
+import Vista.coordinador.Dialogs.DialogInstructor;
 
 public class gestionInstructores extends JFrame {
 
@@ -23,6 +23,20 @@ public class gestionInstructores extends JFrame {
     private String nombreCoordinador;
     private String areaCoordinador;
     private JTextField txtNumeroFicha;
+    private JPanel panel;
+
+    private JLabel arrow;
+    private JLabel lblCoordinador;
+    private JLabel panelCoordinador;
+    private JLabel lblBuscar;
+
+    private JButton btnBuscar;
+    private JButton btnAgregar;
+    private JButton btnEditar;
+    private JButton btnEliminar;
+    private JButton btnExportar;
+
+    private JScrollPane scrollTabla;
 
     public gestionInstructores(String nombreCoordinador,
         String areaCoordinador) {
@@ -31,7 +45,8 @@ public class gestionInstructores extends JFrame {
         this.areaCoordinador = areaCoordinador;
         
         setTitle("Panel instructor");
-        setSize(1920, 1080);
+        setSize(1200,700);
+        setMinimumSize(new java.awt.Dimension(1000,650));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         JLabel lbl = new JLabel("Bienvenido Instructor");
@@ -39,13 +54,13 @@ public class gestionInstructores extends JFrame {
 
         //Paneles  
 
-        JPanel panel = new JPanel();
+        panel = new JPanel();
         panel.setLayout(null);
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
         setContentPane(panel);
 
-        JLabel arrow = new JLabel("←");
+        arrow = new JLabel("←");
         arrow.setBounds(30, 5, 50, 50);
         arrow.setFont(new Font("Arial", Font.BOLD,40));
         
@@ -69,13 +84,14 @@ public class gestionInstructores extends JFrame {
             }
         });
 
-        JLabel lblCoordinador = new JLabel("Gestion Instructores");
+        lblCoordinador = new JLabel("Gestion Instructores");
         lblCoordinador.setForeground(Color.white);
         lblCoordinador.setFont(new Font("Arial", Font.BOLD,20));
-        lblCoordinador.setBounds(100, 0, 1920, 70);
+        lblCoordinador.setHorizontalAlignment(SwingConstants.CENTER);
+        lblCoordinador.setBounds(0,0,1920,70);
         panel.add(lblCoordinador);  
 
-        JLabel panelCoordinador = new JLabel();
+        panelCoordinador = new JLabel();
         panelCoordinador.setOpaque(true);
         panelCoordinador.setBackground(new Color(0, 180, 0));
         panelCoordinador.setForeground(Color.WHITE);
@@ -83,7 +99,7 @@ public class gestionInstructores extends JFrame {
         panel.add(panelCoordinador);
 
 
-        JLabel lblBuscar = new JLabel("Buscar");
+        lblBuscar = new JLabel("Buscar");
         lblBuscar.setForeground(Color.black);
         lblBuscar.setBounds(440, 155, 180, 25);
         lblBuscar.setFont(new Font("Arial", Font.BOLD, 20));
@@ -96,7 +112,7 @@ public class gestionInstructores extends JFrame {
         
         
         //Bonoes para el Coordinador
-        JButton btnBuscar = new JButton("Buscar");
+        btnBuscar = new JButton("Buscar");
         btnBuscar.setBounds(1260, 150, 180, 40);
         btnBuscar.setFont(new Font("Arial", Font.BOLD,20));
         btnBuscar.setBackground(new Color(0, 180, 0));
@@ -104,7 +120,7 @@ public class gestionInstructores extends JFrame {
         btnBuscar.setBorderPainted(false);
         panel.add(btnBuscar);
         
-        JButton btnAgregar = new JButton("Agregar");
+        btnAgregar = new JButton("Agregar");
         btnAgregar.setBounds(260, 260, 240, 70);
         btnAgregar.setFont(new Font("Arial", Font.BOLD,20));
         btnAgregar.setBackground(new Color(0, 180, 0));
@@ -112,7 +128,7 @@ public class gestionInstructores extends JFrame {
         btnAgregar.setBorderPainted(false);
         panel.add(btnAgregar);
 
-        JButton btnEditar = new JButton("Editar");
+        btnEditar = new JButton("Editar");
         btnEditar.setBounds(660, 260, 240, 70);
         btnEditar.setFont(new Font("Arial", Font.BOLD,20));
         btnEditar.setBackground(new Color(0, 180, 0));
@@ -120,7 +136,7 @@ public class gestionInstructores extends JFrame {
         btnEditar.setBorderPainted(false);
         panel.add(btnEditar);
 
-        JButton btnEliminar = new JButton("Eliminar");
+        btnEliminar = new JButton("Eliminar");
         btnEliminar.setBounds(1060, 260, 240, 70);
         btnEliminar.setFont(new Font("Arial", Font.BOLD,20));
         btnEliminar.setBackground(new Color(0, 180, 0));
@@ -128,7 +144,7 @@ public class gestionInstructores extends JFrame {
         btnEliminar.setBorderPainted(false);
         panel.add(btnEliminar);
 
-        JButton btnExportar = new JButton("Exportar");
+        btnExportar = new JButton("Exportar");
         btnExportar.setBounds(1460, 260, 240, 70);
         btnExportar.setFont(new Font("Arial", Font.BOLD,20));
         btnExportar.setBackground(new Color(0, 180, 0));
@@ -163,7 +179,7 @@ public class gestionInstructores extends JFrame {
         };
 
         tablaInstructores = new JTable(modeloTabla);
-
+        tablaInstructores.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         
         tablaInstructores.setRowHeight(50);
         tablaInstructores.setFont(new Font("Arial", Font.BOLD, 18));
@@ -183,7 +199,7 @@ public class gestionInstructores extends JFrame {
         DefaultTableCellRenderer centro = new DefaultTableCellRenderer();
         centro.setHorizontalAlignment(SwingConstants.CENTER);
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             tablaInstructores.getColumnModel()
                     .getColumn(i)
                     .setCellRenderer(centro);
@@ -197,7 +213,7 @@ public class gestionInstructores extends JFrame {
         tablaInstructores.getColumnModel().getColumn(4).setPreferredWidth(250);
         tablaInstructores.getColumnModel().getColumn(5).setPreferredWidth(250);
 
-        JScrollPane scrollTabla = new JScrollPane(tablaInstructores);
+        scrollTabla = new JScrollPane(tablaInstructores);
 
         scrollTabla.setBounds(35, 350, 1840, 600);
 
@@ -211,8 +227,8 @@ public class gestionInstructores extends JFrame {
 
         btnAgregar.addActionListener(e -> {
 
-            dialogInstructor dialog =
-                    new dialogInstructor(this);
+            DialogInstructor dialog =
+                    new DialogInstructor(this);
 
             dialog.setVisible(true);
 
@@ -344,8 +360,8 @@ public class gestionInstructores extends JFrame {
             String numeroFicha = modeloTabla.getValueAt(filaSeleccionada, 3).toString();
             String especialidad = modeloTabla.getValueAt(filaSeleccionada, 4).toString();
 
-            dialogInstructor dialog =
-                    new dialogInstructor(
+            DialogInstructor dialog =
+                    new DialogInstructor(
                             this,
                             identificacion,
                             nombre,
@@ -358,7 +374,114 @@ public class gestionInstructores extends JFrame {
             cargarInstructores();
         });
 
+        resizeComponents();
+
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+
+                resizeComponents();
+
+            }
+
+        });
+        setLocationRelativeTo(null);
         
+    }
+
+    private void resizeComponents() {
+
+        int w = getWidth();
+        int h = getHeight();
+
+        //================ HEADER =================
+
+        panelCoordinador.setBounds(0, 0, w, 70);
+
+        arrow.setBounds(20, 10, 50, 50);
+
+        lblCoordinador.setBounds(
+                (w - 350) / 2,
+                0,
+                350,
+                70
+        );
+
+        //================ BUSCADOR =================
+
+        int buscadorY = 120;
+
+        lblBuscar.setBounds(
+                w / 2 - 420,
+                buscadorY,
+                120,
+                40
+        );
+
+        txtNumeroFicha.setBounds(
+                w / 2 - 270,
+                buscadorY,
+                500,
+                40
+        );
+
+        btnBuscar.setBounds(
+                w / 2 + 260,
+                buscadorY,
+                170,
+                40
+        );
+
+        //================ BOTONES =================
+
+        int ancho = 220;
+        int alto = 65;
+        int espacio = 35;
+
+        int total = (ancho * 4) + (espacio * 3);
+
+        int inicio = (w - total) / 2;
+
+        int yBotones = 210;
+
+        btnAgregar.setBounds(
+                inicio,
+                yBotones,
+                ancho,
+                alto
+        );
+
+        btnEditar.setBounds(
+                inicio + ancho + espacio,
+                yBotones,
+                ancho,
+                alto
+        );
+
+        btnEliminar.setBounds(
+                inicio + (ancho + espacio) * 2,
+                yBotones,
+                ancho,
+                alto
+        );
+
+        btnExportar.setBounds(
+                inicio + (ancho + espacio) * 3,
+                yBotones,
+                ancho,
+                alto
+        );
+
+        //================ TABLA =================
+
+        scrollTabla.setBounds(
+                30,
+                320,
+                w - 60,
+                h - 400
+        );
+
     }
 
     private void cargarInstructores() {

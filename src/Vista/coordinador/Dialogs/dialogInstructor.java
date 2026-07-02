@@ -8,7 +8,7 @@ import javax.swing.*;
 
 import Conexion.Conexion;
 
-public class dialogInstructor extends JDialog {
+public class DialogInstructor extends JDialog {
 
     private JTextField txtDocumento;
     private JTextField txtNombre;
@@ -18,7 +18,7 @@ public class dialogInstructor extends JDialog {
     private boolean modoEditar = false;
 
     // AGREGAR
-    public dialogInstructor(JFrame parent) {
+    public DialogInstructor(JFrame parent) {
 
         super(parent, "Agregar Instructor", true);
 
@@ -26,7 +26,7 @@ public class dialogInstructor extends JDialog {
     }
 
     // EDITAR
-    public dialogInstructor(
+    public DialogInstructor(
             JFrame parent,
             String identificacion,
             String nombre,

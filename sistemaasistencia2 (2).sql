@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 30-06-2026 a las 03:31:21
+-- Servidor: 127.0.0.1:3307
+-- Tiempo de generación: 30-06-2026 a las 00:31:03
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `sistemaasistencia`
+-- Base de datos: `sistemaasistencia2`
 --
 
 -- --------------------------------------------------------
@@ -32,7 +32,6 @@ CREATE TABLE `aprendiz` (
   `documento` varchar(20) DEFAULT NULL,
   `programa` varchar(100) DEFAULT NULL,
   `telefono` varchar(20) DEFAULT NULL,
-  `id` int(11) DEFAULT NULL,
   `numeroFicha` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -40,9 +39,12 @@ CREATE TABLE `aprendiz` (
 -- Volcado de datos para la tabla `aprendiz`
 --
 
-INSERT INTO `aprendiz` (`idAprendiz`, `documento`, `programa`, `telefono`, `id`, `numeroFicha`) VALUES
-(1, '123456789', 'Programación de Software', '3101234567', 1, '3364343'),
-(2, '987654321', 'Diseño Gráfico', '3209876543', 2, '4455667');
+INSERT INTO `aprendiz` (`idAprendiz`, `documento`, `programa`, `telefono`, `numeroFicha`) VALUES
+(1, '123456', 'Programación de Software', '3101234567', '3364343'),
+(2, '987654321', 'Diseño Gráfico', '3209876543', '4455667'),
+(3, '1000352146', 'Programación de Software', '3214215811', '3364343'),
+(4, '111111111', 'Análisis y Desarrollo de Software', '3001111111', '4455667'),
+(5, '222222222', 'Análisis y Desarrollo de Software', '3002222222', '4455667');
 
 -- --------------------------------------------------------
 
@@ -52,23 +54,21 @@ INSERT INTO `aprendiz` (`idAprendiz`, `documento`, `programa`, `telefono`, `id`,
 
 CREATE TABLE `asistencia` (
   `idAsistencia` int(11) NOT NULL,
-  `fecha` date DEFAULT NULL,
-  `hora` time DEFAULT NULL,
-  `estado` varchar(30) DEFAULT NULL,
-  `idAprendiz` int(11) DEFAULT NULL,
-  `idInstructor` int(11) DEFAULT NULL,
-  `justificada` tinyint(1) DEFAULT 0
+  `idClase` int(11) NOT NULL,
+  `idAprendiz` int(11) NOT NULL,
+  `horaRegistro` time DEFAULT NULL,
+  `fechaRegistro` date DEFAULT NULL,
+  `estado` enum('ASISTIO','TARDE','FALTA','EXCUSA') DEFAULT NULL,
+  `observacion` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `asistencia`
 --
 
-INSERT INTO `asistencia` (`idAsistencia`, `fecha`, `hora`, `estado`, `idAprendiz`, `idInstructor`, `justificada`) VALUES
-(1, '2026-05-14', '07:00:00', 'Presente', 1, 5, 0),
-(2, '2026-05-13', '07:00:00', 'Presente', 1, 5, 0),
-(3, '2026-05-12', '07:00:00', 'Falta', 1, 5, 0),
-(4, '2026-05-11', '07:00:00', 'Presente', 1, 5, 0);
+INSERT INTO `asistencia` (`idAsistencia`, `idClase`, `idAprendiz`, `horaRegistro`, `fechaRegistro`, `estado`, `observacion`) VALUES
+(2, 13, 5, '01:01:39', '2026-06-29', 'EXCUSA', 'Revisar en sistema'),
+(3, 13, 4, '16:35:28', '2026-06-29', 'ASISTIO', '');
 
 -- --------------------------------------------------------
 
@@ -89,6 +89,19 @@ CREATE TABLE `clase` (
   `visible` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `clase`
+--
+
+INSERT INTO `clase` (`idClase`, `idInstructor`, `numeroFicha`, `fecha`, `horaInicio`, `horaFin`, `tema`, `estado`, `asistenciaRegistrada`, `visible`) VALUES
+(1, 2, '3364343', '2025-02-20', '07:00:00', '07:15:00', 'Programación Orientada a Objetos', 'PROGRAMADA', 0, 1),
+(2, 2, '3364343', '2025-02-20', '08:00:00', '08:15:00', 'Consultas SQL', 'PROGRAMADA', 0, 1),
+(3, 1, '3423421', '2025-02-20', '09:00:00', '09:15:00', 'HTML y CSS', 'PROGRAMADA', 0, 1),
+(10, 2, '3364343', '2026-07-02', '12:04:00', '14:04:00', 'FrontEnd', 'PROGRAMADA', 0, 1),
+(11, 2, '3364343', '2026-07-09', '20:13:35', '20:13:35', 'Redes Y Comunicacion', 'PROGRAMADA', 0, 1),
+(12, 2, '3364343', '2026-07-16', '20:20:02', '20:20:02', 'Redes', 'PROGRAMADA', 0, 1),
+(13, 2, '4455667', '2026-07-31', '20:42:03', '20:42:03', 'Programacion Orientada Objetos', 'PROGRAMADA', 0, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -100,6 +113,17 @@ CREATE TABLE `clase_aprendiz` (
   `idClase` int(11) NOT NULL,
   `idAprendiz` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `clase_aprendiz`
+--
+
+INSERT INTO `clase_aprendiz` (`idClaseAprendiz`, `idClase`, `idAprendiz`) VALUES
+(1, 10, 1),
+(2, 10, 3),
+(7, 13, 2),
+(8, 13, 4),
+(9, 13, 5);
 
 -- --------------------------------------------------------
 
@@ -121,21 +145,21 @@ CREATE TABLE `coordinador` (
 
 CREATE TABLE `excusa` (
   `idExcusa` int(11) NOT NULL,
-  `idAprendiz` int(11) NOT NULL,
-  `idInstructor` int(11) NOT NULL,
-  `fechaEnvio` datetime DEFAULT current_timestamp(),
-  `motivo` varchar(300) NOT NULL,
-  `archivo` varchar(500) DEFAULT NULL,
-  `estado` enum('Pendiente','Aprobada','Rechazada') DEFAULT 'Pendiente',
-  `observacion` varchar(300) DEFAULT NULL
+  `fechaSolicitud` date DEFAULT NULL,
+  `motivo` varchar(300) DEFAULT NULL,
+  `estado` enum('PENDIENTE','ACEPTADA','RECHAZADA') DEFAULT NULL,
+  `archivo` varchar(255) DEFAULT NULL,
+  `idAprendiz` int(11) DEFAULT NULL,
+  `idClase` int(11) NOT NULL,
+  `idAsistencia` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `excusa`
 --
 
-INSERT INTO `excusa` (`idExcusa`, `idAprendiz`, `idInstructor`, `fechaEnvio`, `motivo`, `archivo`, `estado`, `observacion`) VALUES
-(1, 1, 5, '2026-06-26 16:39:07', 'Incapacidad', 'C:\\Users\\dazav\\Desktop\\sistema asistencia\\Excusas\\1782509947162_T.I 1028863730 Gabriel daza.pdf', 'Aprobada', NULL);
+INSERT INTO `excusa` (`idExcusa`, `fechaSolicitud`, `motivo`, `estado`, `archivo`, `idAprendiz`, `idClase`, `idAsistencia`) VALUES
+(2, '2026-06-29', 'Incapacidad médica por enfermedad respiratoria.', 'PENDIENTE', 'D:\\10 SEMESTRE\\Hojas de Vida\\Scrum', 5, 13, 3);
 
 -- --------------------------------------------------------
 
@@ -154,8 +178,9 @@ CREATE TABLE `ficha` (
 --
 
 INSERT INTO `ficha` (`numeroFicha`, `programa`, `jornada`) VALUES
-('0', 'popo', 'Noche'),
 ('3364343', 'Programación de Software', 'Mañana'),
+('3364587', 'Redes y Telecomunicaciones', 'Noche'),
+('3423421', 'Analsis de IT', 'Tarde'),
 ('4455667', 'Diseño Gráfico', 'Tarde');
 
 -- --------------------------------------------------------
@@ -176,9 +201,10 @@ CREATE TABLE `instructor` (
 --
 
 INSERT INTO `instructor` (`idInstructor`, `especialidad`, `id`, `numeroFicha`) VALUES
-(5, 'Programación', 2, '3364343'),
-(6, 'ADSO', 3, '4455667'),
-(7, 'ADSO', 4, NULL);
+(1, 'Programación', 2, '3364343'),
+(2, 'ADSO', 3, '4455667'),
+(3, 'Tecnologias de la Informacion', 10, '3423421'),
+(4, 'Programación Web', 10, '3423421');
 
 -- --------------------------------------------------------
 
@@ -215,7 +241,10 @@ INSERT INTO `usuarios` (`id`, `identificacion`, `tipoDocumento`, `rol`, `passwor
 (1, '123456', 'CC', 'Aprendiz', '1234', 'Carlos Pérez'),
 (2, '654321', 'CE', 'Instructor', '321', 'María Gómez'),
 (3, '121212', 'CC', 'Coordinador', '456', 'Luis Rodríguez'),
-(4, '11', 'CC', 'Instructor', '123456', 'Andres');
+(9, '1000352146', 'CC', 'Aprendiz', '123456', 'Dilan Peñaloza'),
+(10, '1500024152', 'CC', 'Instructor', '123456', 'Edwin Gomez'),
+(11, '111111111', 'CC', 'Aprendiz', '1234', 'Carlos Pérez'),
+(12, '222222222', 'CC', 'Aprendiz', '1234', 'Laura Gómez');
 
 --
 -- Índices para tablas volcadas
@@ -226,7 +255,6 @@ INSERT INTO `usuarios` (`id`, `identificacion`, `tipoDocumento`, `rol`, `passwor
 --
 ALTER TABLE `aprendiz`
   ADD PRIMARY KEY (`idAprendiz`),
-  ADD KEY `id` (`id`),
   ADD KEY `numeroFicha` (`numeroFicha`);
 
 --
@@ -234,8 +262,8 @@ ALTER TABLE `aprendiz`
 --
 ALTER TABLE `asistencia`
   ADD PRIMARY KEY (`idAsistencia`),
-  ADD KEY `idAprendiz` (`idAprendiz`),
-  ADD KEY `idInstructor` (`idInstructor`);
+  ADD KEY `idClase` (`idClase`),
+  ADD KEY `idAprendiz` (`idAprendiz`);
 
 --
 -- Indices de la tabla `clase`
@@ -265,7 +293,8 @@ ALTER TABLE `coordinador`
 ALTER TABLE `excusa`
   ADD PRIMARY KEY (`idExcusa`),
   ADD KEY `idAprendiz` (`idAprendiz`),
-  ADD KEY `idInstructor` (`idInstructor`);
+  ADD KEY `fk_excusa_clase` (`idClase`),
+  ADD KEY `fk_excusa_asistencia` (`idAsistencia`);
 
 --
 -- Indices de la tabla `ficha`
@@ -301,13 +330,13 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `aprendiz`
 --
 ALTER TABLE `aprendiz`
-  MODIFY `idAprendiz` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idAprendiz` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `asistencia`
 --
 ALTER TABLE `asistencia`
-  MODIFY `idAsistencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idAsistencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `clase`
@@ -331,13 +360,13 @@ ALTER TABLE `coordinador`
 -- AUTO_INCREMENT de la tabla `excusa`
 --
 ALTER TABLE `excusa`
-  MODIFY `idExcusa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idExcusa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `instructor`
 --
 ALTER TABLE `instructor`
-  MODIFY `idInstructor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idInstructor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `reporte`
@@ -349,7 +378,7 @@ ALTER TABLE `reporte`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Restricciones para tablas volcadas
@@ -359,15 +388,14 @@ ALTER TABLE `usuarios`
 -- Filtros para la tabla `aprendiz`
 --
 ALTER TABLE `aprendiz`
-  ADD CONSTRAINT `aprendiz_ibfk_1` FOREIGN KEY (`id`) REFERENCES `usuarios` (`id`),
   ADD CONSTRAINT `aprendiz_ibfk_2` FOREIGN KEY (`numeroFicha`) REFERENCES `ficha` (`numeroFicha`);
 
 --
 -- Filtros para la tabla `asistencia`
 --
 ALTER TABLE `asistencia`
-  ADD CONSTRAINT `asistencia_ibfk_1` FOREIGN KEY (`idAprendiz`) REFERENCES `aprendiz` (`idAprendiz`),
-  ADD CONSTRAINT `asistencia_ibfk_2` FOREIGN KEY (`idInstructor`) REFERENCES `instructor` (`idInstructor`);
+  ADD CONSTRAINT `asistencia_ibfk_1` FOREIGN KEY (`idClase`) REFERENCES `clase` (`idClase`),
+  ADD CONSTRAINT `asistencia_ibfk_2` FOREIGN KEY (`idAprendiz`) REFERENCES `aprendiz` (`idAprendiz`);
 
 --
 -- Filtros para la tabla `clase`
@@ -393,7 +421,8 @@ ALTER TABLE `coordinador`
 --
 ALTER TABLE `excusa`
   ADD CONSTRAINT `excusa_ibfk_1` FOREIGN KEY (`idAprendiz`) REFERENCES `aprendiz` (`idAprendiz`),
-  ADD CONSTRAINT `excusa_ibfk_2` FOREIGN KEY (`idInstructor`) REFERENCES `instructor` (`idInstructor`);
+  ADD CONSTRAINT `fk_excusa_asistencia` FOREIGN KEY (`idAsistencia`) REFERENCES `asistencia` (`idAsistencia`),
+  ADD CONSTRAINT `fk_excusa_clase` FOREIGN KEY (`idClase`) REFERENCES `clase` (`idClase`);
 
 --
 -- Filtros para la tabla `instructor`
